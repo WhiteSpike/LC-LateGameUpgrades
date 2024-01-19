@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
+using MoreShipUpgrades.UpgradeComponents.Commands;
 
 
 namespace MoreShipUpgrades.Misc
@@ -35,6 +36,8 @@ namespace MoreShipUpgrades.Misc
         public bool EXTEND_DEADLINE_ENABLED { get; set; }
         public bool WHEELBARROW_ENABLED { get; set; }
         public bool SCRAP_WHEELBARROW_ENABLED { get; set; }
+        public bool DOOR_HYDRAULICS_BATTERY_ENABLED {  get; set; }
+        public bool SCRAP_INSURANCE_ENABLED {  get; set; }
 
         // individual or shared
         public bool ADVANCED_TELE_INDIVIDUAL { get; set; }
@@ -77,7 +80,10 @@ namespace MoreShipUpgrades.Misc
         public int PLAYER_HEALTH_PRICE { get; set; }
         public int EXTEND_DEADLINE_PRICE { get; set; }
         public int CONTRACT_PRICE { get; set; }
+        public int CONTRACT_SPECIFY_PRICE { get; set; }
         public int WHEELBARROW_PRICE { get; set; }
+        public int DOOR_HYDRAULICS_BATTERY_PRICE { get; set; }
+        public int SCRAP_INSURANCE_PRICE { get; set; }
 
         // attributes
         public float BIGGER_LUNGS_STAMINA_REGEN_INCREASE { get; set; }
@@ -232,6 +238,17 @@ namespace MoreShipUpgrades.Misc
         public float SCRAP_WHEELBARROW_RARITY { get; set; }
         public bool SCRAP_WHEELBARROW_PLAY_NOISE {  get; set; }
         public float SCAV_VOLUME { get; set; }
+        public bool CONTRACT_FREE_MOONS_ONLY { get; set; }
+        public string DOOR_HYDRAULICS_BATTERY_PRICES { get; set; }
+        public float DOOR_HYDRAULICS_BATTERY_INITIAL { get; set; }
+        public float DOOR_HYDRAULICS_BATTERY_INCREMENTAL {  get; set; }
+        public bool DATA_CONTRACT {  get; set; }
+        public bool EXTERMINATOR_CONTRACT {  get; set; }
+        public bool EXORCISM_CONTRACT {  get; set; }
+        public bool EXTRACTION_CONTRACT {  get; set; }
+        public bool DEFUSAL_CONTRACT {  get; set; }
+        public bool MAIN_OBJECT_FURTHEST {  get; set; }
+
 
         public PluginConfig(ConfigFile cfg)
         {
@@ -247,19 +264,29 @@ namespace MoreShipUpgrades.Misc
         {
             string topSection = "Contracts";
             CONTRACTS_ENABLED = ConfigEntry(topSection, "Enable the ability to purchase contracts / missions", true, "");
+            CONTRACT_FREE_MOONS_ONLY = ConfigEntry(topSection, "Random contracts on free moons only", true, "If true, \"contract\" command will only generate contracts on free moons.");
             CONTRACT_PRICE = ConfigEntry(topSection, "Price of a random contract", 500, "");
+            CONTRACT_SPECIFY_PRICE = ConfigEntry(topSection, "Price of a specified moon contract", 750, "");
             CONTRACT_BUG_REWARD = ConfigEntry(topSection, "Value of an exterminator contract reward", 500, "");
             CONTRACT_EXOR_REWARD = ConfigEntry(topSection, "Value of an exorcism contract reward", 500, "");
             CONTRACT_DEFUSE_REWARD = ConfigEntry(topSection, "Value of an defusal contract reward", 500, "");
             CONTRACT_EXTRACT_REWARD = ConfigEntry(topSection, "Value of an extraction contract reward", 500, "");
             CONTRACT_DATA_REWARD = ConfigEntry(topSection, "Value of a data contract reward", 500, "");
             CONTRACT_BUG_SPAWNS = ConfigEntry(topSection, "Hoarder Bug Spawn Number", 20, "How many bugs to spawn during exterminator contracts.");
-            CONTRACT_GHOST_SPAWN = ConfigEntry(topSection, "Dress Girl Spawn Number", 3, "How many ghosts to spawn when failing exorcism contracts");
+            CONTRACT_GHOST_SPAWN = ConfigEntry(topSection, "Dress Girl / Thumper Spawn Number", 3, "How many ghosts/thumpers to spawn when failing exorcism contracts");
             CONTRACT_EXTRACT_WEIGHT = ConfigEntry(topSection,"Weight of an extraction human", 2.5f, "Subtract 1 and multiply by 100 (2.5 = 150lbs).");
             SCAV_VOLUME = ConfigEntry(topSection,"Volume of the scavenger voice clips", 0.25f, "0.0 - 1.0");
+            MAIN_OBJECT_FURTHEST = ConfigEntry(topSection, "Spawn main object far away", true, "If true the main object for contracts will try spawn as far away from the main entrance as possible. If false it will spawn at a random location.");
+
+            // this is kind of dumb and I'd like to just use a comma seperated string but this is much more foolproof
+            DATA_CONTRACT = ConfigEntry(topSection,"Enable the data contract", true, "Make this false if you don't want the data contract");
+            EXTRACTION_CONTRACT = ConfigEntry(topSection,"Enable the extraction contract", true, "Make this false if you don't want the extraction contract");
+            EXORCISM_CONTRACT = ConfigEntry(topSection,"Enable the exorcism contract", true, "Make this false if you don't want the exorcism contract");
+            DEFUSAL_CONTRACT = ConfigEntry(topSection,"Enable the defusal contract", true, "Make this false if you don't want the defusal contract");
+            EXTERMINATOR_CONTRACT = ConfigEntry(topSection,"Enable the exterminator contract", true, "Make this false if you don't want the exterminator contract");
             
-            topSection = "Misc";
-            SHARED_UPGRADES = ConfigEntry(topSection, "Convert all upgrades to be shared.", true, "Mod is designed to be played with this off.");
+            topSection = "_Misc_";
+            SHARED_UPGRADES = ConfigEntry(topSection, "Convert all upgrades to be shared.", true, "If true this will ignore the individual shared upgrade option for all other upgrades and set all upgrades to be shared.");
             SALE_PERC = ConfigEntry(topSection, "Chance of upgrades going on sale", 0.85f, "0.85 = 15% chance of an upgrade going on sale.");
             INTRO_ENABLED = ConfigEntry(topSection, "Intro Enabled", true, "If true shows a splashscreen with some info once per update of LGU.");
             KEEP_UPGRADES_AFTER_FIRED_CUTSCENE = ConfigEntry(topSection, "Keep upgrades after quota failure", false, "If true, you will keep your upgrades after being fired by The Company.");
@@ -480,6 +507,17 @@ namespace MoreShipUpgrades.Misc
             DIVEKIT_WEIGHT = ConfigEntry(topSection, "Item weight", 1.65f, "-1 and multiply by 100 (1.65 = 65 lbs)");
             DIVEKIT_TWO_HANDED = ConfigEntry(topSection, "Two Handed Item", true, "One or two handed item.");
 
+            topSection = DoorsHydraulicsBattery.UPGRADE_NAME;
+            DOOR_HYDRAULICS_BATTERY_ENABLED = ConfigEntry(topSection, DoorsHydraulicsBattery.ENABLED_SECTION, true, DoorsHydraulicsBattery.ENABLED_DESCRIPTION);
+            DOOR_HYDRAULICS_BATTERY_PRICE = ConfigEntry(topSection, DoorsHydraulicsBattery.PRICE_SECTION, DoorsHydraulicsBattery.PRICE_DEFAULT);
+            DOOR_HYDRAULICS_BATTERY_PRICES = ConfigEntry(topSection, BaseUpgrade.PRICES_SECTION, DoorsHydraulicsBattery.PRICES_DEFAULT, BaseUpgrade.PRICES_DESCRIPTION);
+            DOOR_HYDRAULICS_BATTERY_INITIAL = ConfigEntry(topSection, DoorsHydraulicsBattery.INITIAL_SECTION, DoorsHydraulicsBattery.INITIAL_DEFAULT, DoorsHydraulicsBattery.INITIAL_DESCRIPTION);
+            DOOR_HYDRAULICS_BATTERY_INCREMENTAL = ConfigEntry(topSection, DoorsHydraulicsBattery.INCREMENTAL_SECTION, DoorsHydraulicsBattery.INCREMENTAL_DEFAULT, DoorsHydraulicsBattery.INCREMENTAL_DESCRIPTION);
+          
+            topSection = ScrapInsurance.COMMAND_NAME;
+            SCRAP_INSURANCE_ENABLED = ConfigEntry(topSection, "Enable Scrap Insurance Command", true, "One time purchase which allows you to keep all your scrap upon a team wipe on a moon trip");
+            SCRAP_INSURANCE_PRICE = ConfigEntry(topSection, "Price of Scrap Insurance", ScrapInsurance.DEFAULT_PRICE);
+
             topSection = "Wheelbarrow";
             WHEELBARROW_ENABLED = ConfigEntry(topSection, "Enable the Wheelbarrow Item", true, "Allows you to buy a wheelbarrow to carry items outside of your inventory");
             WHEELBARROW_PRICE = ConfigEntry(topSection, "Price of the Wheelbarrow Item", 400, "Price of the Wheelbarrow in the store");
@@ -493,7 +531,7 @@ namespace MoreShipUpgrades.Misc
             WHEELBARROW_MOVEMENT_SLOPPY = ConfigEntry(topSection, "Sloppiness of the Wheelbarrow Item", 5f, "Value multiplied on the player's movement to give the feeling of drifting while carrying the Wheelbarrow Item");
             WHEELBARROW_PLAY_NOISE = ConfigEntry(topSection, "Plays noises for players with Wheelbarrow Item", true, "If false, it will just not play the sounds, it will still attract monsters to noise");
             SCRAP_WHEELBARROW_ENABLED = ConfigEntry(topSection, "Enable the Shopping Cart Item", true, "Allows you to scavenge a wheelbarrow in which you can store items on");
-            SCRAP_WHEELBARROW_RARITY = ConfigEntry(topSection, "Spawn chance of Shopping Cart Item", 0.1f, "How likely it is to a scrap wheelbarrow item to spawn when landing on a moon.");
+            SCRAP_WHEELBARROW_RARITY = ConfigEntry(topSection, "Spawn chance of Shopping Cart Item", 0.1f, "How likely it is to a scrap wheelbarrow item to spawn when landing on a moon. (0.1 = 10%)");
             SCRAP_WHEELBARROW_WEIGHT = ConfigEntry(topSection, "Weight of the Shopping Cart Item", 25f, "Weight of the scrap wheelbarrow's without any items in lbs");
             SCRAP_WHEELBARROW_MAXIMUM_AMOUNT_ITEMS = ConfigEntry(topSection, "Maximum amount of items for Shopping Cart", 6, "Amount of items allowed before the scrap wheelbarrow is considered full");
             SCRAP_WHEELBARROW_WEIGHT_REDUCTION_MULTIPLIER = ConfigEntry(topSection, "Weight reduction multiplier for Shopping Cart", 0.5f, "How much an item's weight will be ignored to the scrap wheelbarrow's total weight");

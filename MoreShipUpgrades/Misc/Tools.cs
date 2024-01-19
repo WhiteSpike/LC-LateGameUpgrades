@@ -1,5 +1,11 @@
-﻿using System;
+﻿using LethalLib.Modules;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using Unity.Netcode;
+using UnityEngine;
 
 namespace MoreShipUpgrades.Misc
 {
@@ -9,7 +15,7 @@ namespace MoreShipUpgrades.Misc
         {
             if(list == null) throw new ArgumentNullException("list");
 
-            Random random = new Random();
+            System.Random random = new System.Random();
             int n = list.Count;
             while (n > 1)
             {
@@ -20,5 +26,22 @@ namespace MoreShipUpgrades.Misc
                 list[n] = value;
             }
         }
+
+        public static bool SpawnMob(string mob, Vector3 position, int numToSpawn) // this could be moved to tools
+        {
+            for (int i = 0; i < RoundManager.Instance.currentLevel.Enemies.Count; i++)
+            {
+                if (RoundManager.Instance.currentLevel.Enemies[i].enemyType.enemyName == mob)
+                {
+                    for (int j = 0; j < numToSpawn; j++)
+                    {
+                        RoundManager.Instance.SpawnEnemyOnServer(position, 0f, i);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
     }
 }

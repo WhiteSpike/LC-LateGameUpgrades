@@ -28,7 +28,7 @@ using MoreShipUpgrades.UpgradeComponents.Commands;
 namespace MoreShipUpgrades
 {
     [BepInEx.BepInPlugin(Metadata.GUID,Metadata.NAME,Metadata.VERSION)]
-    [BepInDependency("evaisa.lethallib")]
+    [BepInDependency("evaisa.lethallib","0.13.0")]
     public class Plugin : BaseUnityPlugin
     {
         private readonly Harmony harmony = new Harmony(Metadata.GUID);
@@ -136,6 +136,7 @@ namespace MoreShipUpgrades
             if (bomb == null) return;
             bomb.isConductiveMetal = false;
             DefusalContract coNest = bomb.spawnPrefab.AddComponent<DefusalContract>();
+            coNest.SetPosition = true;
 
             BombDefusalScript bombScript = bomb.spawnPrefab.AddComponent<BombDefusalScript>();
             bombScript.snip = AssetBundleHandler.TryLoadAudioClipAsset(ref bundle, root + "scissors.mp3");
@@ -144,7 +145,7 @@ namespace MoreShipUpgrades
 
             Utilities.FixMixerGroups(bomb.spawnPrefab);
             NetworkPrefabs.RegisterNetworkPrefab(bomb.spawnPrefab);
-            //Items.RegisterItem(bomb);
+            Items.RegisterItem(bomb);
 
             SpawnableMapObjectDef mapObjDefBug = ScriptableObject.CreateInstance<SpawnableMapObjectDef>();
             mapObjDefBug.spawnableMapObject = new SpawnableMapObject();
@@ -181,6 +182,7 @@ namespace MoreShipUpgrades
             if (mainItem == null || contractLoot == null) return;
 
             ExorcismContract co = mainItem.spawnPrefab.AddComponent<ExorcismContract>();
+            co.SetPosition = true;
 
             PentagramScript pentScript = mainItem.spawnPrefab.AddComponent<PentagramScript>();
             pentScript.loot = contractLoot.spawnPrefab;
@@ -209,6 +211,7 @@ namespace MoreShipUpgrades
             if (nest == null || bugLoot == null) return;
 
             ExterminatorContract coNest = nest.spawnPrefab.AddComponent<ExterminatorContract>();
+            coNest.SetPosition = true;
 
             BugNestScript nestScript = nest.spawnPrefab.AddComponent<BugNestScript>();
             nestScript.loot = bugLoot.spawnPrefab;
@@ -230,6 +233,7 @@ namespace MoreShipUpgrades
 
             scav.weight = UpgradeBus.instance.cfg.CONTRACT_EXTRACT_WEIGHT;
             ExtractionContract co = scav.spawnPrefab.AddComponent<ExtractionContract>();
+            co.SetPosition = true;
 
             ExtractPlayerScript extractScript = scav.spawnPrefab.AddComponent<ExtractPlayerScript>();
             TextAsset scavAudioPaths = AssetBundleHandler.TryLoadOtherAsset<TextAsset>(ref bundle, root + "scavSounds/scavAudio.json");
@@ -260,6 +264,7 @@ namespace MoreShipUpgrades
             if (pc == null || dataLoot == null) return;
 
             DataRetrievalContract coPC = pc.spawnPrefab.AddComponent<DataRetrievalContract>();
+            coPC.SetPosition = true;
 
             DataPCScript dataScript = pc.spawnPrefab.AddComponent<DataPCScript>();
             dataScript.error = AssetBundleHandler.TryLoadAudioClipAsset(ref bundle, root + "winError.mp3");
@@ -576,6 +581,8 @@ namespace MoreShipUpgrades
             wheelbarrow.isConductiveMetal = true;
             wheelbarrow.isScrap = true;
             wheelbarrow.weight = 0.99f + (cfg.SCRAP_WHEELBARROW_WEIGHT/100f);
+            wheelbarrow.toolTips = new string[] { "Drop all items: [MMB]" };
+            wheelbarrow.canBeGrabbedBeforeGameStart = true;
             ScrapWheelbarrow barrowScript = wheelbarrow.spawnPrefab.AddComponent<ScrapWheelbarrow>();
             barrowScript.itemProperties = wheelbarrow;
             barrowScript.wheelsClip = shoppingCartSound;
@@ -606,6 +613,8 @@ namespace MoreShipUpgrades
             wheelbarrow.allowDroppingAheadOfPlayer = true;
             wheelbarrow.isConductiveMetal = true;
             wheelbarrow.weight = 0.99f + (cfg.WHEELBARROW_WEIGHT/100f);
+            wheelbarrow.toolTips = new string[] { "Drop all items: [MMB] " };
+            wheelbarrow.canBeGrabbedBeforeGameStart = true;
             StoreWheelbarrow barrowScript = wheelbarrow.spawnPrefab.AddComponent<StoreWheelbarrow>();
             barrowScript.itemProperties = wheelbarrow;
             barrowScript.wheelsClip = wheelbarrowSound;
@@ -640,6 +649,8 @@ namespace MoreShipUpgrades
             SetupContract();
             SetupSickBeats();
             SetupExtendDeadline();
+            SetupDoorsHydraulicsBattery();
+            SetupScrapInsurance();
         }
 
         private void SetupSickBeats()
@@ -728,6 +739,14 @@ namespace MoreShipUpgrades
         {
             SetupGenericPerk<ExtendDeadlineScript>(ExtendDeadlineScript.UPGRADE_NAME);
         }
+        private void SetupDoorsHydraulicsBattery()
+        {
+            SetupGenericPerk<DoorsHydraulicsBattery>(DoorsHydraulicsBattery.UPGRADE_NAME);
+        }
+        private void SetupScrapInsurance()
+        {
+            SetupGenericPerk<ScrapInsurance>(ScrapInsurance.COMMAND_NAME);
+        }
         /// <summary>
         /// Generic function where it adds a script (specificed through the type) into an GameObject asset 
         /// which is present in a provided asset bundle in a given path and registers it as a network prefab.
@@ -737,11 +756,12 @@ namespace MoreShipUpgrades
         /// <param name="path"> The path to access the asset in the asset bundle</param>
         private void SetupGenericPerk<T>(string upgradeName) where T : Component
         {
+            // soon I want to move this to use NetworkPrefabs.CreateNetworkPrefab
             GameObject perk = AssetBundleHandler.GetPerkGameObject(upgradeName);
             if (!perk) return;
 
             perk.AddComponent<T>();
-            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(perk);
+            NetworkPrefabs.RegisterNetworkPrefab(perk);
         }
     }
 }
