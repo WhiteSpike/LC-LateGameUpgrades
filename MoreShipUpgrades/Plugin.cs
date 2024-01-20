@@ -24,6 +24,7 @@ using MoreShipUpgrades.UpgradeComponents.Items.Contracts.BombDefusal;
 using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
 using MoreShipUpgrades.UpgradeComponents.Commands;
+using MoreShipUpgrades.UpgradeComponents.Items.BarbedWire;
 
 namespace MoreShipUpgrades
 {
@@ -39,7 +40,6 @@ namespace MoreShipUpgrades
         private AudioClip[] wheelbarrowSound, shoppingCartSound;
 
         public static PluginConfig cfg { get; private set; }
-
 
         void Awake()
         {
@@ -315,6 +315,7 @@ namespace MoreShipUpgrades
             SetupHelmet();
             SetupDivingKit();
             SetupWheelbarrows();
+            SetupBarbedWire();
         }
         private void SetupSamples()
         {
@@ -363,7 +364,6 @@ namespace MoreShipUpgrades
             SetupRegularTeleporterButton();
             SetupAdvancedTeleporterButton();
         }
-
         private void SetupHelmet()
         {
             Item helmet = AssetBundleHandler.GetItemObject("HelmetItem");
@@ -626,6 +626,43 @@ namespace MoreShipUpgrades
             TerminalNode wheelbarrowNode = ScriptableObject.CreateInstance<TerminalNode>();
             wheelbarrowNode.displayText = $"A portable container which has a maximum capacity of {cfg.WHEELBARROW_MAXIMUM_AMOUNT_ITEMS} and reduces the effective weight of the inserted items by {cfg.WHEELBARROW_WEIGHT_REDUCTION_MULTIPLIER*100} %.\nIt weighs {1f + (cfg.WHEELBARROW_WEIGHT/100f)} lbs";
             LethalLib.Modules.Items.RegisterShopItem(wheelbarrow, null, null, wheelbarrowNode, wheelbarrow.creditsWorth);
+        }
+        private void SetupBarbedWire()
+        {
+            Item barbedWire = AssetBundleHandler.GetItemObject("Barbed Wire");
+            if (barbedWire == null) return;
+            barbedWire.isScrap = false;
+            barbedWire.allowDroppingAheadOfPlayer = true;
+            barbedWire.canBeGrabbedBeforeGameStart = false;
+            barbedWire.creditsWorth = cfg.BARBED_WIRE_PRICE;
+            barbedWire.isConductiveMetal = true;
+            barbedWire.itemId = 492020;
+            barbedWire.itemName = "Barbed Wire";
+            barbedWire.itemSpawnsOnGround = true;
+            barbedWire.saveItemVariable = true;
+            barbedWire.weight = 0.99f + (cfg.BARBED_WIRE_WEIGHT / 100f);
+            BarbedWire barbedWireScript = barbedWire.spawnPrefab.AddComponent<BarbedWire>();
+            barbedWireScript.itemProperties = barbedWire;
+            LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(barbedWire.spawnPrefab);
+            Utilities.FixMixerGroups(barbedWire.spawnPrefab);
+
+            UpgradeBus.instance.ItemsToSync.Add("Barbed Wire", barbedWire);
+
+            TerminalNode barbedWireNode = ScriptableObject.CreateInstance<TerminalNode>();
+            string slowDownEnemies = $"slow down by {(1f - cfg.BARBED_WIRE_SLOW_MULTIPLIER)/100f}%";
+            string damageEnemies = $"damage equivalent to {cfg.BARBED_WIRE_DAMAGE_AMOUNT} force";
+            string stunEnemies = $"stun for {cfg.BARBED_WIRE_STUN_TIME} seconds";
+            string slowdownPlayers = $"slow down by {(1f - cfg.BARBED_WIRE_SLOW_PLAYER_MULTIPLIER) / 100f}%";
+            string damagePlayers = $"deal {cfg.BARBED_WIRE_DAMAGE_PLAYER_AMOUNT} damage";
+            barbedWireNode.displayText = $"A kit of barbed wire which can {(cfg.BARBED_WIRE_SLOW_ENEMIES ? $"{slowDownEnemies}" : "")}" +
+                                        $"{(cfg.BARBED_WIRE_DAMAGE_ENEMIES ? cfg.BARBED_WIRE_SLOW_ENEMIES ? !cfg.BARBED_WIRE_STUN_ENEMIES ? $"and {damageEnemies}" : $", {damageEnemies}" : $"{damageEnemies}" : "")}" +
+                                        $"{(cfg.BARBED_WIRE_STUN_ENEMIES ? cfg.BARBED_WIRE_DAMAGE_ENEMIES || cfg.BARBED_WIRE_SLOW_ENEMIES ? $"and {stunEnemies}" : $"{stunEnemies}" : "")}" +
+                                        $"{(cfg.BARBED_WIRE_SLOW_ENEMIES || cfg.BARBED_WIRE_DAMAGE_ENEMIES || cfg.BARBED_WIRE_STUN_ENEMIES ? "enemies" : "")}" +
+                                        $"{(cfg.BARBED_WIRE_SLOW_PLAYERS || cfg.BARBED_WIRE_DAMAGE_PLAYERS ? "but also " : "")}" +
+                                        $"{(cfg.BARBED_WIRE_SLOW_PLAYERS ? $" {slowdownPlayers}" : "")}" +
+                                        $"{(cfg.BARBED_WIRE_DAMAGE_PLAYERS ? cfg.BARBED_WIRE_SLOW_PLAYERS ? $" and {damagePlayers}" : $"{damagePlayers}" : "")}" +
+                                        $"{(!cfg.BARBED_WIRE_SLOW_ENEMIES && !cfg.BARBED_WIRE_DAMAGE_ENEMIES && !cfg.BARBED_WIRE_STUN_ENEMIES && !cfg.BARBED_WIRE_SLOW_PLAYERS && !cfg.BARBED_WIRE_DAMAGE_PLAYERS ? " do nothing." : ".")}";
+            LethalLib.Modules.Items.RegisterShopItem(barbedWire, null, null, barbedWireNode, barbedWire.creditsWorth);
         }
         private void SetupPerks()
         {

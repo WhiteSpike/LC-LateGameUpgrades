@@ -38,6 +38,7 @@ namespace MoreShipUpgrades.Misc
         public bool SCRAP_WHEELBARROW_ENABLED { get; set; }
         public bool DOOR_HYDRAULICS_BATTERY_ENABLED {  get; set; }
         public bool SCRAP_INSURANCE_ENABLED {  get; set; }
+        public bool BARBED_WIRE_ENABLED { get; set; }
 
         // individual or shared
         public bool ADVANCED_TELE_INDIVIDUAL { get; set; }
@@ -84,6 +85,7 @@ namespace MoreShipUpgrades.Misc
         public int WHEELBARROW_PRICE { get; set; }
         public int DOOR_HYDRAULICS_BATTERY_PRICE { get; set; }
         public int SCRAP_INSURANCE_PRICE { get; set; }
+        public int BARBED_WIRE_PRICE { get; set; }
 
         // attributes
         public float BIGGER_LUNGS_STAMINA_REGEN_INCREASE { get; set; }
@@ -248,7 +250,18 @@ namespace MoreShipUpgrades.Misc
         public bool EXTRACTION_CONTRACT {  get; set; }
         public bool DEFUSAL_CONTRACT {  get; set; }
         public bool MAIN_OBJECT_FURTHEST {  get; set; }
-
+        public float BARBED_WIRE_WEIGHT { get; set; }
+        public float BARBED_WIRE_SLOW_MULTIPLIER { get; set; }
+        public int BARBED_WIRE_DAMAGE_AMOUNT { get; set; }
+        public float BARBED_WIRE_STUN_TIME { get; set; }
+        public float BARBED_WIRE_SLOW_PLAYER_MULTIPLIER { get; set; }
+        public int BARBED_WIRE_DAMAGE_PLAYER_AMOUNT { get; set; }
+        public bool BARBED_WIRE_SLOW_ENEMIES { get; set; }
+        public bool BARBED_WIRE_DAMAGE_ENEMIES { get; set; }
+        public bool BARBED_WIRE_STUN_ENEMIES { get; set; }
+        public bool BARBED_WIRE_SLOW_PLAYERS { get; set; }
+        public bool BARBED_WIRE_DAMAGE_PLAYERS { get; set; }
+        public int BARBED_WIRE_MAXIMUM_USES { get; set; }
 
         public PluginConfig(ConfigFile cfg)
         {
@@ -517,6 +530,22 @@ namespace MoreShipUpgrades.Misc
             topSection = ScrapInsurance.COMMAND_NAME;
             SCRAP_INSURANCE_ENABLED = ConfigEntry(topSection, "Enable Scrap Insurance Command", true, "One time purchase which allows you to keep all your scrap upon a team wipe on a moon trip");
             SCRAP_INSURANCE_PRICE = ConfigEntry(topSection, "Price of Scrap Insurance", ScrapInsurance.DEFAULT_PRICE);
+
+            topSection = "Barbed Wire";
+            BARBED_WIRE_ENABLED = ConfigEntry(topSection, "Enable Barbed Wire item", true, "Item which applies certain effects on entities that get caught on its radius when it's set up");
+            BARBED_WIRE_PRICE = ConfigEntry(topSection, "Price of the Barbed Wire item", 30);
+            BARBED_WIRE_WEIGHT = ConfigEntry(topSection, "Weight of the Barbed Wire item", 15f);
+            BARBED_WIRE_MAXIMUM_USES = ConfigEntry(topSection, "Maximum uses of Barbed Wire item", 4, "The consumes are only depleted when an enemy gets caught on it");
+            BARBED_WIRE_SLOW_ENEMIES = ConfigEntry(topSection, "Slows down enemies when caught", true);
+            BARBED_WIRE_SLOW_MULTIPLIER = ConfigEntry(topSection, "Speed multiplier on caught enemies", 0.50f, "Multiplier applied on caught enemy's speed when it's in its radius");
+            BARBED_WIRE_DAMAGE_ENEMIES = ConfigEntry(topSection, "Damages enemies when caught", false);
+            BARBED_WIRE_DAMAGE_AMOUNT = ConfigEntry(topSection, "Enemy damage when caught", 1, "Applied on the enemy when it gets caught by the barbed wire");
+            BARBED_WIRE_STUN_ENEMIES = ConfigEntry(topSection, "Stuns enemies when caught", true);
+            BARBED_WIRE_STUN_TIME = ConfigEntry(topSection, "Stun time of the enemy", 2f, "Amount of time in seconds in which the caught enemy stays stunned");
+            BARBED_WIRE_SLOW_PLAYERS = ConfigEntry(topSection, "Slows down players when caught", true);
+            BARBED_WIRE_SLOW_PLAYER_MULTIPLIER = ConfigEntry(topSection, "Speed multiplier on caught players", 0.50f, "Multiplier applied on caught player's speed when it's in its radius");
+            BARBED_WIRE_DAMAGE_PLAYERS = ConfigEntry(topSection, "Damages players when caught", false);
+            BARBED_WIRE_DAMAGE_PLAYER_AMOUNT = ConfigEntry(topSection, "Player damage when caught", 10, "Applied on the player when it gets caught by the barbed wire");
 
             topSection = "Wheelbarrow";
             WHEELBARROW_ENABLED = ConfigEntry(topSection, "Enable the Wheelbarrow Item", true, "Allows you to buy a wheelbarrow to carry items outside of your inventory");

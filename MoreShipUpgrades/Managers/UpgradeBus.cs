@@ -3,6 +3,7 @@ using LethalLib.Modules;
 using MoreShipUpgrades.Misc;
 using MoreShipUpgrades.UpgradeComponents.Commands;
 using MoreShipUpgrades.UpgradeComponents.Items;
+using MoreShipUpgrades.UpgradeComponents.Items.BarbedWire;
 using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
 using System.Collections.Generic;
@@ -81,7 +82,8 @@ namespace MoreShipUpgrades.Managers
         public PlayerControllerB localPlayer;
         private HangarShipDoor hangarDoors;
 
-        public List<BoomboxItem> boomBoxes = new List<BoomboxItem>();
+        internal List<BoomboxItem> boomBoxes = new List<BoomboxItem>();
+        internal List<BaseBarbedWire> barbedWires = new List<BaseBarbedWire>();
 
         public List<CustomTerminalNode> terminalNodes = new List<CustomTerminalNode>();
 
@@ -368,6 +370,13 @@ namespace MoreShipUpgrades.Managers
                 Items.RemoveShopItem(ItemsToSync["Wheel"]);
             }
             else if (ItemsToSync["Wheel"].creditsWorth != cfg.WHEELBARROW_PRICE) Items.UpdateShopItemPrice(ItemsToSync["Wheel"], cfg.WHEELBARROW_PRICE);
+
+            if (!cfg.BARBED_WIRE_ENABLED)
+            {
+                logger.LogInfo("Removing Barbed Wire from store.");
+                Items.RemoveShopItem(ItemsToSync["Barbed Wire"]);
+            }
+            else if (ItemsToSync["Barbed Wire"].creditsWorth != cfg.BARBED_WIRE_PRICE) Items.UpdateShopItemPrice(ItemsToSync["Barbed Wire"], cfg.BARBED_WIRE_PRICE);
         }
 
         void SyncAvailableContracts()

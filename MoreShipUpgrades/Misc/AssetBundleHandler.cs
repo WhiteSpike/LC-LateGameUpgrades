@@ -62,6 +62,7 @@ namespace MoreShipUpgrades.Misc
             { "Diving Kit", root+"DivingKitItem.asset" },
             { "Store Wheelbarrow", root+"Items/Wheelbarrow/StoreWheelbarrowItem.asset" },
             { "Scrap Wheelbarrow", root+"Items/Wheelbarrow/ScrapWheelbarrowItem.asset" },
+            { "Barbed Wire", root+"Items/BarbedWire/BarbedWireItem.asset" },
 
             { "Wheelbarrow Sound 0", root+"Items/Wheelbarrow/Wheelbarrow_Move_1.mp3" },
             { "Wheelbarrow Sound 1", root+"Items/Wheelbarrow/Wheelbarrow_Move_2.ogg" },
