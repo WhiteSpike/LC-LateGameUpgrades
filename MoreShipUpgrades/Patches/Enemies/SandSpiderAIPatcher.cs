@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(SandSpiderAI))]
     internal class SandSpiderAIPatcher
@@ -74,7 +74,7 @@ namespace MoreShipUpgrades.Patches
             index = Tools.LookForFloat(index, ref codes, PATROL_SPEED, checkForBarbedWire, true, "Couldn't find the agent speed for spider when on wall");
             return index = Tools.LookForFloat(index, ref codes, PATROL_SPEED, checkForBarbedWire, true, "Couldn't find the spider speed for spider when on wall");
         }
-        static int PatchAgentSpeedWhenPatrolling(int index , ref List<CodeInstruction> codes)
+        static int PatchAgentSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             index = Tools.LookForFloat(index, ref codes, WALL_SPEED, checkForBarbedWire, true, "Couldn't find the agent speed for spider when patrolling");

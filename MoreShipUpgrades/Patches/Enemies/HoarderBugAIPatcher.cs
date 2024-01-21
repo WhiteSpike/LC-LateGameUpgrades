@@ -8,7 +8,7 @@ using System.Reflection;
 using MoreShipUpgrades.Misc;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(HoarderBugAI))]
     internal class HoarderBugAIPatcher
@@ -31,7 +31,7 @@ namespace MoreShipUpgrades.Patches
         static int PatchAgentSpeedWhenGettingItem(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, PATROL_SPEED, checkForBarbedWire, true, "Could not find the agent speed when getting item") ;
+            return Tools.LookForFloat(index, ref codes, PATROL_SPEED, checkForBarbedWire, true, "Could not find the agent speed when getting item");
         }
         static int PatchAgentSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
         {
@@ -50,7 +50,7 @@ namespace MoreShipUpgrades.Patches
         {
             if (UpgradeBus.instance.contractType != "exterminator") return;
 
-            if(UpgradeBus.instance.contractLevel == RoundManager.Instance.currentLevel.PlanetName)
+            if (UpgradeBus.instance.contractLevel == RoundManager.Instance.currentLevel.PlanetName)
             {
                 __result = true;
             }

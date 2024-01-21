@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(FlowermanAI))]
     internal class FlowermanAIPatcher
@@ -53,7 +53,7 @@ namespace MoreShipUpgrades.Patches
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             return Tools.LookForFloat(index, ref codes, MAXIMUM_CARRYING_SPEED, checkForBarbedWire, true, "Couldn't find maximum agent speed when carrying body");
         }
-        static int PatchAgentSpeedWhenAngry(int index, ref List<CodeInstruction> codes) 
+        static int PatchAgentSpeedWhenAngry(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             return Tools.LookForFloat(index, ref codes, INITIAL_ANGRY_SPEED, checkForBarbedWire, true, "Couldn't find agent speed when entering angry mode");

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(ForestGiantAI))]
     internal class ForestGiantAIPatcher

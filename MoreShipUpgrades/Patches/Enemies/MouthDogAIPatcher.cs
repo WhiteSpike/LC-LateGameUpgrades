@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(MouthDogAI))]
     internal class MouthDogAIPatcher

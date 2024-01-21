@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(CrawlerAI))]
     internal class CrawlerAIPatcher
@@ -14,7 +14,7 @@ namespace MoreShipUpgrades.Patches
         const float ENTERING_CHASE_SPEED = 7f;
         const float PATROL_SPEED = 8f;
         const float MAXIMUM_CHASE_SPEED = 16f;
-        const float MAXIMUM_ACCELERATION = 40f;
+        const float MAXIMUM_ACCELERATION = 80f;
         [HarmonyPatch(nameof(CrawlerAI.Update))]
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> UpdateTranspiler(IEnumerable<CodeInstruction> instructions)
