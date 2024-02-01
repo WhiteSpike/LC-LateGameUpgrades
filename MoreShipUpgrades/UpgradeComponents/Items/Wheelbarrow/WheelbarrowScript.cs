@@ -261,7 +261,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.Wheelbarrow
         }
         private bool CheckWheelbarrowAllRestrictions()
         {
-            bool weightCondition = itemProperties.weight - (defaultWeight - 1f) > 1f + maximumWeightAllowed / 100f;
+            bool weightCondition = totalWeight > 1f + maximumWeightAllowed / 100f;
             bool itemCountCondition = currentAmountItems >= maximumAmountItems;
             if (weightCondition || itemCountCondition)
             {
@@ -276,7 +276,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.Wheelbarrow
         }
         private bool CheckWheelbarrowWeightRestriction()
         {
-            if (itemProperties.weight - (defaultWeight - 1f) > 1f + maximumWeightAllowed / 100f)
+            if (totalWeight > 1f + maximumWeightAllowed / 100f)
             {
                 foreach (InteractTrigger trigger in triggers)
                 {
@@ -414,6 +414,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.Wheelbarrow
 
         public static float CheckIfPlayerCarryingWheelbarrowLookSensitivity(float defaultValue)
         {
+            if (!UpgradeBus.instance.cfg.WHEELBARROW_ENABLED && !UpgradeBus.instance.cfg.SCRAP_WHEELBARROW_ENABLED) return defaultValue;
             PlayerControllerB player = UpgradeBus.instance.GetLocalPlayer();
             if (!player.isHoldingObject) return defaultValue;
             if (player.currentlyHeldObjectServer is not WheelbarrowScript) return defaultValue;
@@ -422,6 +423,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.Wheelbarrow
         }
         public static float CheckIfPlayerCarryingWheelbarrowMovement(float defaultValue)
         {
+            if (!UpgradeBus.instance.cfg.WHEELBARROW_ENABLED && !UpgradeBus.instance.cfg.SCRAP_WHEELBARROW_ENABLED) return defaultValue;
             PlayerControllerB player = UpgradeBus.instance.GetLocalPlayer();
             if (!player.isHoldingObject) return defaultValue;
             if (player.currentlyHeldObjectServer is not WheelbarrowScript) return defaultValue;
@@ -431,6 +433,12 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.Wheelbarrow
         public static bool CheckIfPlayerCarryingWheelbarrow(PlayerControllerB instance)
         {
             return instance.isHoldingObject && instance.currentlyHeldObjectServer is WheelbarrowScript;
+        }
+
+        public static bool CheckIfItemInWheelbarrow(GrabbableObject item)
+        {
+            if (item == null) return false;
+            return item.GetComponentInParent<WheelbarrowScript>() != null;
         }
     }
 }
