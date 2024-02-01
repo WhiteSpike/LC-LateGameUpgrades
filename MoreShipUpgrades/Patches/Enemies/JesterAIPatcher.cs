@@ -34,12 +34,12 @@ namespace MoreShipUpgrades.Patches.Enemies
         private static int PatchAgentMaximumSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, MAXIMUM_SPEED, checkForBarbedWire, true, "Couldn't find agent maximum speed when chasing");
+            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
         }
         private static int PatchAgentSpeedAfterStun(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, INITIAL_SPEED_AFTER_STUN, checkForBarbedWire, true, "Couldn't find agent maximum speed when chasing");
+            return Tools.FindFloat(index, ref codes, findValue: INITIAL_SPEED_AFTER_STUN, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
         }
     }
 }

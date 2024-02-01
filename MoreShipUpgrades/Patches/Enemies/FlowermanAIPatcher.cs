@@ -41,22 +41,22 @@ namespace MoreShipUpgrades.Patches.Enemies
         static int PatchAngetMaximumSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, MAXIMUM_ANGRY_SPEED, checkForBarbedWire, true, "Couldn't find agent maximum speed when chasing");
+            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_ANGRY_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
         }
         static int PatchAngetMaximumSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, PATROL_SPEED, checkForBarbedWire, true, "Couldn't find agent maximum speed when patrolling");
+            return Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when patrolling");
         }
         static int PatchAngetMaximumSpeedWhenCarryingBody(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, MAXIMUM_CARRYING_SPEED, checkForBarbedWire, true, "Couldn't find maximum agent speed when carrying body");
+            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_CARRYING_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find maximum agent speed when carrying body");
         }
         static int PatchAgentSpeedWhenAngry(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, INITIAL_ANGRY_SPEED, checkForBarbedWire, true, "Couldn't find agent speed when entering angry mode");
+            return Tools.FindFloat(index, ref codes, findValue: INITIAL_ANGRY_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when entering angry mode");
         }
     }
 }

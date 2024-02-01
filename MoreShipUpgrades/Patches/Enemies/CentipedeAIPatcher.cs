@@ -24,7 +24,7 @@ namespace MoreShipUpgrades.Patches.Enemies
         private static int PatchAgentMaximumSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, MAXIMUM_SPEED, checkForBarbedWire, true, "Couldn't find maximum agent speed when chasing");
+            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find maximum agent speed when chasing");
         }
     }
 }

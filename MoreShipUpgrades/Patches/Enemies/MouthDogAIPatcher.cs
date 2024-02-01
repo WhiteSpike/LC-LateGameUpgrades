@@ -43,22 +43,22 @@ namespace MoreShipUpgrades.Patches.Enemies
         static int PatchAgentSpeedWhenPatrol(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, PATROL_SPEED, checkForBarbedWire, true, "Could not find the agent speed when patrolling");
+            return Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Could not find the agent speed when patrolling");
         }
         static int PatchAgentSpeedWhenSuspicious(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, SUSPICIOUS_SPEED, checkForBarbedWire, true, "Could not find the agent speed when suspicious");
+            return Tools.FindFloat(index, ref codes, findValue: SUSPICIOUS_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Could not find the agent speed when suspicious");
         }
         static int PatchMinimumAgentSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, MINIMUM_CHASING_SPEED, checkForBarbedWire, true, "Could not find the minimum agent speed when chasing");
+            return Tools.FindFloat(index, ref codes, findValue: MINIMUM_CHASING_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Could not find the minimum agent speed when chasing");
         }
         static int PatchMaximumAgentSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, MAXIMUM_CHASING_SPEED, checkForBarbedWire, true, "Could not find the maximum agent speed when chasing");
+            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_CHASING_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Could not find the maximum agent speed when chasing");
         }
     }
 }

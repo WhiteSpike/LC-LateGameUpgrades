@@ -31,23 +31,23 @@ namespace MoreShipUpgrades.Patches.Enemies
         static int PatchAgentWalkingSpeedWhenHidingInShip(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWires = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, TOWARDS_SHIP_SPEED, checkForBarbedWires, true, "Couldn't find agent running speed when patrolling");
+            return Tools.FindFloat(index, ref codes, findValue: TOWARDS_SHIP_SPEED, addCode: checkForBarbedWires, requireInstance: true, errorMessage: "Couldn't find agent running speed when patrolling");
         }
         static int PatchAgentRunningSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWires = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, CHASE_RUNNING_SPEED, checkForBarbedWires, true, "Couldn't find agent running speed when patrolling");
+            return Tools.FindFloat(index, ref codes, findValue: CHASE_RUNNING_SPEED, addCode: checkForBarbedWires, requireInstance: true, errorMessage: "Couldn't find agent running speed when patrolling");
         }
         static int PatchAgentWalkingSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWires = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, WALKING_SPEED, checkForBarbedWires, true, "Couldn't find agent running speed when patrolling");
+            return Tools.FindFloat(index, ref codes, findValue: WALKING_SPEED, addCode: checkForBarbedWires, requireInstance: true, errorMessage: "Couldn't find agent running speed when patrolling");
         }
 
         static int PatchAgentRunningSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWires = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.LookForFloat(index, ref codes, PATROL_RUNNING_SPEED, checkForBarbedWires, true, "Couldn't find agent running speed when patrolling");
+            return Tools.FindFloat(index, ref codes, findValue: PATROL_RUNNING_SPEED, addCode: checkForBarbedWires, requireInstance: true, errorMessage: "Couldn't find agent running speed when patrolling");
         }
     }
 }
