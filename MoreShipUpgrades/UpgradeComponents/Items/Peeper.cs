@@ -40,7 +40,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
             return result;
         }
 
-        public static bool HasLineOfSightToPeepers(Vector3 springPosition)
+        public static bool HasLineOfSightToPeepers(SpringManAI instance)
         {
             foreach (Peeper peeper in UpgradeBus.instance.coilHeadItems)
             {
@@ -49,7 +49,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
                     UpgradeBus.instance.coilHeadItems.Remove(peeper);
                     continue;
                 }
-                if (peeper.HasLineOfSightToPosition(springPosition)) return true;
+                if (peeper.HasLineOfSightToPosition(instance.transform.position)) return true;
             }
             return false;
         }

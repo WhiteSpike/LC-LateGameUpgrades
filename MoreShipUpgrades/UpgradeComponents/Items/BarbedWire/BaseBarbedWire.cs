@@ -36,6 +36,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.BarbedWire
         private InteractTrigger prepareBarbedWire;
         //private Animator animator;
         private List<EnemyAI> affectedEnemies;
+        private bool firstTimeAffectPlayer;
         private bool affectingPlayer;
 
         private const string PREPARED = "Prepare";
@@ -72,6 +73,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.BarbedWire
             grabbable = true;
             grabbableToEnemies = true;
             affectedEnemies = new List<EnemyAI>();
+            firstTimeAffectPlayer = false;
             affectingPlayer = false;
         }
 
@@ -134,7 +136,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.BarbedWire
 
             if (distance <= radius)
             {
-                if (affectingPlayer) return;
+                if (firstTimeAffectPlayer || affectingPlayer) return;
                 affectingPlayer = true;
                 logger.LogDebug("Applying effects on player");
                 if (slowDownPlayers)
@@ -151,6 +153,11 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.BarbedWire
 
         private void RemovePlayerEffects(ref PlayerControllerB localPlayer)
         {
+            if (firstTimeAffectPlayer)
+            {
+                firstTimeAffectPlayer = false;
+                return;
+            }
             if (affectingPlayer && slowDownPlayers) localPlayer.movementSpeed /= slowPlayersMultiplier;
             affectingPlayer = false;
         }
@@ -202,6 +209,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.BarbedWire
         {
             prepared = enabled;
             //animator.SetBool(PREPARED, enabled);
+            firstTimeAffectPlayer = enabled;
             grabbable = !enabled;
             grabbableToEnemies = !enabled;
             prepareBarbedWire.hoverTip = enabled ? PICKUP_INTERACT_MESSAGE : PREPARE_INTERACT_MESSAGE;
@@ -218,18 +226,6 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.BarbedWire
                     UpgradeBus.instance.barbedWires.RemoveAt(i);
                     continue;
                 }
-                /*
-                RaycastHit[] enemyColliders = new RaycastHit[10];
-                int numEnemiesHit = Physics.SphereCastNonAlloc(barbedWire.transform.position, barbedWire.radius, barbedWire.transform.forward, enemyColliders, barbedWire.radius, 524288, QueryTriggerInteraction.Collide);
-                for (int j = 0; i < numEnemiesHit; i++)
-                {
-                    EnemyAICollisionDetect enemyCollision = enemyColliders[i].transform.GetComponent<EnemyAICollisionDetect>();
-                    if (enemyCollision == null) break;
-                    EnemyAI enemyAI = enemyCollision.mainScript;
-
-                    if (enemyAI == instance) return defaultSpeed * barbedWires[i].slowEnemiesMultiplier;
-                }
-                */
                 if (Vector3.Distance(instance.agent.transform.position, barbedWires[i].transform.position) <= barbedWires[i].radius)
                 {
                     return defaultSpeed * barbedWires[i].slowEnemiesMultiplier;
