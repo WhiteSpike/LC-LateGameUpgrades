@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.RoundComponents
 {
     [HarmonyPatch(typeof(RoundManager))]
     internal class RoundManagerPatcher
@@ -22,7 +22,7 @@ namespace MoreShipUpgrades.Patches
         /// the enemy spawning
         /// </summary>
         [HarmonyPatch(nameof(RoundManager.PlotOutEnemiesForNextHour))]
-        [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
+        [HarmonyPatch(nameof(RoundManager.AdvanceHourAndSpawnNewBatchOfEnemies))]
         [HarmonyPrefix]
         public static void ChangeDaysForEnemySpawns()
         {
@@ -35,7 +35,7 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyPatch(nameof(RoundManager.PlotOutEnemiesForNextHour))]
-        [HarmonyPatch("AdvanceHourAndSpawnNewBatchOfEnemies")]
+        [HarmonyPatch(nameof(RoundManager.AdvanceHourAndSpawnNewBatchOfEnemies))]
         [HarmonyPostfix]
         public static void UndoChangeDaysForEnemySpawns()
         {

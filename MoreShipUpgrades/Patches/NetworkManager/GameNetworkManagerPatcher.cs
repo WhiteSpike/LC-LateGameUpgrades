@@ -3,7 +3,7 @@ using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc;
 using UnityEngine;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.NetworkManager
 {
     [HarmonyPatch(typeof(GameNetworkManager))]
     internal class GameNetworkManagerPatcher
@@ -18,17 +18,8 @@ namespace MoreShipUpgrades.Patches
             foreach (BaseUpgrade upgrade in upgradeObjects)
             {
                 Object.Destroy(upgrade.gameObject);
-            }           
+            }
             UpgradeBus.instance.ResetAllValues();
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(GameNetworkManager.SaveGame))]
-        private static void saveLGU(GameNetworkManager __instance)
-        {
-            if (!__instance.isHostingGame) return;
-            logger.LogDebug("Saving the LGU upgrades unto a json file...");
-            LGUStore.instance.ServerSaveFileServerRpc();
         }
     }
 }

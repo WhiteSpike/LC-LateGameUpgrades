@@ -7,20 +7,20 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.Interactables
 {
     [HarmonyPatch(typeof(SteamValveHazard))]
     internal class SteamValveHazardPatch
     {
         [HarmonyPostfix]
-        [HarmonyPatch("BurstValve")]
+        [HarmonyPatch(nameof(SteamValveHazard.BurstValve))]
         public static void BurstValvePostFix(ref SteamValveHazard __instance)
         {
             strongerScannerScript.AddScannerNodeToValve(ref __instance);
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch("FixValveLocalClient")]
+        [HarmonyPatch(nameof(SteamValveHazard.FixValveLocalClient))]
         public static void FixValvePostFix(ref SteamValveHazard __instance)
         {
             strongerScannerScript.RemoveScannerNodeFromValve(ref __instance);

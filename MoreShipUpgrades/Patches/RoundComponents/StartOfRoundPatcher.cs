@@ -10,27 +10,27 @@ using System.Reflection.Emit;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.RoundComponents
 {
     [HarmonyPatch(typeof(StartOfRound))]
     internal class StartOfRoundPatcher
     {
         private static LGULogger logger = new LGULogger(nameof(StartOfRoundPatcher));
         [HarmonyPrefix]
-        [HarmonyPatch("Start")]
+        [HarmonyPatch(nameof(StartOfRound.Start))]
         private static void InitLGUStore(PlayerControllerB __instance)
         {
             logger.LogDebug("Initiating components...");
-            if(__instance.NetworkManager.IsHost || __instance.NetworkManager.IsServer)
+            if (__instance.NetworkManager.IsHost || __instance.NetworkManager.IsServer)
             {
-                GameObject refStore = GameObject.Instantiate(UpgradeBus.instance.modStorePrefab);
+                GameObject refStore = Object.Instantiate(UpgradeBus.instance.modStorePrefab);
                 refStore.GetComponent<NetworkObject>().Spawn();
                 logger.LogDebug("LGUStore component initiated...");
             }
-            foreach(GameObject sample in UpgradeBus.instance.samplePrefabs.Values)
+            foreach (GameObject sample in UpgradeBus.instance.samplePrefabs.Values)
             {
                 Item item = sample.GetComponent<PhysicsProp>().itemProperties;
-                if(!StartOfRound.Instance.allItemsList.itemsList.Contains(item))
+                if (!StartOfRound.Instance.allItemsList.itemsList.Contains(item))
                 {
                     StartOfRound.Instance.allItemsList.itemsList.Add(item);
                 }
@@ -39,7 +39,7 @@ namespace MoreShipUpgrades.Patches
             }
         }
         [HarmonyPrefix]
-        [HarmonyPatch("playersFiredGameOver")]
+        [HarmonyPatch(nameof(StartOfRound.playersFiredGameOver))]
         private static void GameOverResetUpgradeManager(StartOfRound __instance)
         {
             if (UpgradeBus.instance.cfg.KEEP_UPGRADES_AFTER_FIRED_CUTSCENE) return;
@@ -78,6 +78,15 @@ namespace MoreShipUpgrades.Patches
             if (!__instance.IsHost) return;
 
             LGUStore.instance.SyncContractDetailsClientRpc("None", -1);
+        }
+
+        [HarmonyPatch(nameof(StartOfRound.AutoSaveShipData))]
+        [HarmonyPostfix]
+        private static void AutoSaveShipDataPostfix()
+        {
+            if (!GameNetworkManager.Instance.isHostingGame) return;
+            logger.LogDebug("Saving the LGU upgrades unto a json file...");
+            LGUStore.instance.ServerSaveFileServerRpc();
         }
     }
 }

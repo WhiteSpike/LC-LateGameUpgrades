@@ -12,7 +12,7 @@ using UnityEngine;
 using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.PlayerController
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatcher
@@ -80,24 +80,24 @@ namespace MoreShipUpgrades.Patches
         static bool WeDoALittleReturningFalse(PlayerControllerB __instance)
         {
             if (!__instance.IsOwner || __instance.isPlayerDead || !__instance.AllowPlayerDeath()) return true;
-            if(UpgradeBus.instance.wearingHelmet)
+            if (UpgradeBus.instance.wearingHelmet)
             {
                 logger.LogDebug($"Player {__instance.playerUsername} is wearing a helmet, executing helmet logic...");
                 UpgradeBus.instance.helmetHits--;
-                if(UpgradeBus.instance.helmetHits <= 0)
+                if (UpgradeBus.instance.helmetHits <= 0)
                 {
                     logger.LogDebug("Helmet has ran out of durability, breaking the helmet...");
                     UpgradeBus.instance.wearingHelmet = false;
-                    if(__instance.IsHost || __instance.IsServer)LGUStore.instance.DestroyHelmetClientRpc(__instance.playerClientId);
+                    if (__instance.IsHost || __instance.IsServer) LGUStore.instance.DestroyHelmetClientRpc(__instance.playerClientId);
                     else LGUStore.instance.ReqDestroyHelmetServerRpc(__instance.playerClientId);
-                    if(__instance.IsHost || __instance.IsServer) LGUStore.instance.PlayAudioOnPlayerClientRpc(new NetworkBehaviourReference(__instance),"breakWood");
-                    else LGUStore.instance.ReqPlayAudioOnPlayerServerRpc(new NetworkBehaviourReference(__instance),"breakWood");
+                    if (__instance.IsHost || __instance.IsServer) LGUStore.instance.PlayAudioOnPlayerClientRpc(new NetworkBehaviourReference(__instance), "breakWood");
+                    else LGUStore.instance.ReqPlayAudioOnPlayerServerRpc(new NetworkBehaviourReference(__instance), "breakWood");
                 }
                 else
                 {
                     logger.LogDebug($"Helmet still has some durability ({UpgradeBus.instance.helmetHits}), decreasing it...");
-                    if(__instance.IsHost || __instance.IsServer) LGUStore.instance.PlayAudioOnPlayerClientRpc(new NetworkBehaviourReference(__instance),"helmet");
-                    else LGUStore.instance.ReqPlayAudioOnPlayerServerRpc(new NetworkBehaviourReference(__instance),"helmet");
+                    if (__instance.IsHost || __instance.IsServer) LGUStore.instance.PlayAudioOnPlayerClientRpc(new NetworkBehaviourReference(__instance), "helmet");
+                    else LGUStore.instance.ReqPlayAudioOnPlayerServerRpc(new NetworkBehaviourReference(__instance), "helmet");
                 }
                 return false;
             }
@@ -105,13 +105,13 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch("PlayerHitGroundEffects")]
+        [HarmonyPatch(nameof(PlayerControllerB.PlayerHitGroundEffects))]
         private static IEnumerable<CodeInstruction> PlayerHitGroundEffectsTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo reduceFallDamageMethod = typeof(strongLegsScript).GetMethod("ReduceFallDamage", BindingFlags.Static | BindingFlags.Public);
+            MethodInfo reduceFallDamageMethod = typeof(strongLegsScript).GetMethod(nameof(strongLegsScript.ReduceFallDamage));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: reduceFallDamageMethod, errorMessage :  "Couldn't find 100 fall damage");
+            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 100 fall damage");
             index = Tools.FindInteger(index, ref codes, findValue: 50, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 50 fall damage");
             index = Tools.FindInteger(index, ref codes, findValue: 30, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 30 fall damage");
 
@@ -133,7 +133,7 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch("BeginGrabObject")]
+        [HarmonyPatch(nameof(PlayerControllerB.BeginGrabObject))]
         public static IEnumerable<CodeInstruction> BeginGrabObjectTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
@@ -145,7 +145,7 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch("GrabObjectClientRpc")]
+        [HarmonyPatch(nameof(PlayerControllerB.GrabObjectClientRpc))]
         public static IEnumerable<CodeInstruction> GrabObjectClientRpcTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
@@ -156,7 +156,7 @@ namespace MoreShipUpgrades.Patches
             return codes;
         }
         [HarmonyPostfix]
-        [HarmonyPatch("GrabObjectClientRpc")]
+        [HarmonyPatch(nameof(PlayerControllerB.GrabObjectClientRpc))]
         public static void GrabObjectClientRpcPostfix(PlayerControllerB __instance)
         {
             if (__instance.currentlyHeldObjectServer == null) return;
@@ -182,7 +182,7 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch("DespawnHeldObjectOnClient")]
+        [HarmonyPatch(nameof(PlayerControllerB.DespawnHeldObjectOnClient))]
         public static IEnumerable<CodeInstruction> DespawnHeldObjectOnClientTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
@@ -216,7 +216,7 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch("Update")]
+        [HarmonyPatch(nameof(PlayerControllerB.Update))]
         static void CheckForBoomboxes(PlayerControllerB __instance)
         {
             if (!UpgradeBus.instance.sickBeats || __instance != GameNetworkManager.Instance.localPlayerController) return;
@@ -229,7 +229,7 @@ namespace MoreShipUpgrades.Patches
                 BeatScript.HandlePlayerEffects(__instance);
                 return; // Clean all effects from Sick Beats since the player's dead
             }
-            foreach(BoomboxItem boom in UpgradeBus.instance.boomBoxes)
+            foreach (BoomboxItem boom in UpgradeBus.instance.boomBoxes)
             {
                 if (!boom.isPlayingMusic) continue;
 
@@ -246,7 +246,7 @@ namespace MoreShipUpgrades.Patches
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch("LateUpdate")]
+        [HarmonyPatch(nameof(PlayerControllerB.LateUpdate))]
         private static IEnumerable<CodeInstruction> LateUpdateTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo biggerLungsRegenMethod = typeof(biggerLungScript).GetMethod(nameof(biggerLungScript.ApplyPossibleIncreasedStaminaRegen));
@@ -258,13 +258,13 @@ namespace MoreShipUpgrades.Patches
             index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip fourth mul instruction");
             index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip fifth mul instruction");
             index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip sixth mul instruction");
-            index = Tools.FindMul(index, ref codes, addCode : biggerLungsRegenMethod, errorMessage: "Couldn't find first mul instruction to include our regen method from Bigger Lungs");
-            index = Tools.FindMul(index, ref codes, addCode : biggerLungsRegenMethod, errorMessage: "Couldn't find second mul instruction to include our regen method from Bigger Lungs");
+            index = Tools.FindMul(index, ref codes, addCode: biggerLungsRegenMethod, errorMessage: "Couldn't find first mul instruction to include our regen method from Bigger Lungs");
+            index = Tools.FindMul(index, ref codes, addCode: biggerLungsRegenMethod, errorMessage: "Couldn't find second mul instruction to include our regen method from Bigger Lungs");
             return codes;
         }
 
         [HarmonyTranspiler]
-        [HarmonyPatch("Jump_performed")]
+        [HarmonyPatch(nameof(PlayerControllerB.Jump_performed))]
         private static IEnumerable<CodeInstruction> JumpPerformedTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo biggerLungsReduceJumpCost = typeof(biggerLungScript).GetMethod(nameof(biggerLungScript.ApplyPossibleReducedJumpStaminaCost));
@@ -293,27 +293,27 @@ namespace MoreShipUpgrades.Patches
             MethodInfo runningShoesReduceNoiseRange = typeof(runningShoeScript).GetMethod(nameof(runningShoeScript.ApplyPossibleReducedNoiseRange));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindFloat(index, ref codes, findValue : 22, addCode : runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
-            index = Tools.FindFloat(index, ref codes, findValue : 17, addCode : runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
+            index = Tools.FindFloat(index, ref codes, findValue: 22, addCode: runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
+            index = Tools.FindFloat(index, ref codes, findValue: 17, addCode: runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
             return codes.AsEnumerable();
         }
 
-        [HarmonyPatch("PlayerLookInput")]
+        [HarmonyPatch(nameof(PlayerControllerB.PlayerLookInput))]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> PlayerLookInputTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo reduceLookSensitivity = typeof(WheelbarrowScript).GetMethod(nameof(WheelbarrowScript.CheckIfPlayerCarryingWheelbarrowLookSensitivity), BindingFlags.Static | BindingFlags.Public);
-            List<CodeInstruction> codes = new List<CodeInstruction> (instructions);
+            MethodInfo reduceLookSensitivity = typeof(WheelbarrowScript).GetMethod(nameof(WheelbarrowScript.CheckIfPlayerCarryingWheelbarrowLookSensitivity));
+            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindFloat(index, ref codes, findValue : 0.008f, addCode: reduceLookSensitivity, errorMessage: "Couldn't find look sensitivity value we wanted to influence");
+            index = Tools.FindFloat(index, ref codes, findValue: 0.008f, addCode: reduceLookSensitivity, errorMessage: "Couldn't find look sensitivity value we wanted to influence");
             return codes;
         }
 
-        [HarmonyPatch("Update")] // We're all going to die
+        [HarmonyPatch(nameof(PlayerControllerB.Update))] // We're all going to die
         [HarmonyTranspiler] // Just kidding
         private static IEnumerable<CodeInstruction> UpdateTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo reduceMovement = typeof(WheelbarrowScript).GetMethod(nameof(WheelbarrowScript.CheckIfPlayerCarryingWheelbarrowMovement), BindingFlags.Static | BindingFlags.Public);
+            MethodInfo reduceMovement = typeof(WheelbarrowScript).GetMethod(nameof(WheelbarrowScript.CheckIfPlayerCarryingWheelbarrowMovement));
             FieldInfo carryWeight = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.carryWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
@@ -323,7 +323,7 @@ namespace MoreShipUpgrades.Patches
             return codes;
         }
 
-        [HarmonyPatch("Crouch_performed")]
+        [HarmonyPatch(nameof(PlayerControllerB.Crouch_performed))]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> CrouchPerformmedTranspiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -331,7 +331,7 @@ namespace MoreShipUpgrades.Patches
             FieldInfo isMenuOpen = typeof(QuickMenuManager).GetField(nameof(QuickMenuManager.isMenuOpen));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindField(index, ref codes, findField: isMenuOpen, addCode: carryingWheelbarrow, orInstruction : true, requireInstance : true, errorMessage : "Couldn't find isMenuOpen field");
+            index = Tools.FindField(index, ref codes, findField: isMenuOpen, addCode: carryingWheelbarrow, orInstruction: true, requireInstance: true, errorMessage: "Couldn't find isMenuOpen field");
             return codes;
         }
     }

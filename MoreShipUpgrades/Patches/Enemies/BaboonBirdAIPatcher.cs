@@ -13,6 +13,7 @@ namespace MoreShipUpgrades.Patches.Enemies
     [HarmonyPatch(typeof(BaboonBirdAI))]
     internal class BaboonBirdAIPatcher
     {
+        private static LGULogger logger = new LGULogger(nameof(BaboonBirdAIPatcher));
         const float PATROL_SPEED = 10f;
         const float CHASE_SPEED = 12f;
         const float COMFORTABLE_SPEED = 9f;
@@ -43,7 +44,7 @@ namespace MoreShipUpgrades.Patches.Enemies
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             return Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when patrolling");
         }
-        [HarmonyPatch("DoLOSCheck")]
+        [HarmonyPatch(nameof(BaboonBirdAI.DoLOSCheck))]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> DoLOSCheckTranspiler(IEnumerable<CodeInstruction> instructions)
         {

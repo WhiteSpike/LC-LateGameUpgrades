@@ -2,7 +2,7 @@
 using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc;
 
-namespace MoreShipUpgrades.Patches
+namespace MoreShipUpgrades.Patches.TerminalComponents
 {
     [HarmonyPatch(typeof(Terminal))]
     internal class TerminalPatcher
@@ -21,11 +21,11 @@ namespace MoreShipUpgrades.Patches
         private const string INFO_CONTRACT_HELP_COMMAND = ">CONTRACT INFO \nDisplays all information related to each contract and how to complete it.\n\n";
 
         [HarmonyPostfix]
-        [HarmonyPatch("Start")]
+        [HarmonyPatch(nameof(Terminal.Start))]
         private static void StartPostfix(ref Terminal __instance)
         {
             TerminalNode helpNode = __instance.terminalNodes.specialNodes[HELP_TERMINAL_NODE];
-            if (startingIndex != -1 && endingIndex != -1) helpNode.displayText = helpNode.displayText.Remove(startingIndex, endingIndex-startingIndex);
+            if (startingIndex != -1 && endingIndex != -1) helpNode.displayText = helpNode.displayText.Remove(startingIndex, endingIndex - startingIndex);
             startingIndex = helpNode.displayText.Length;
             helpNode.displayText += ">LATEGAME\nDisplays information related with Lategame-Upgrades mod\n\n";
             helpNode.displayText += ">LGU / LATEGAME STORE\nDisplays the purchaseable upgrades from Lategame store.\n\n";
@@ -78,7 +78,7 @@ namespace MoreShipUpgrades.Patches
             HandleHelpCommand(ref helpNode, string.Format(EXTEND_HELP_COMMAND, UpgradeBus.instance.cfg.EXTEND_DEADLINE_PRICE), UpgradeBus.instance.cfg.EXTEND_DEADLINE_ENABLED);
         }
         [HarmonyPostfix]
-        [HarmonyPatch("ParsePlayerSentence")]
+        [HarmonyPatch(nameof(Terminal.ParsePlayerSentence))]
         private static void CustomParser(ref Terminal __instance, ref TerminalNode __result)
         {
             string text = __instance.screenText.text.Substring(__instance.screenText.text.Length - __instance.textAdded);

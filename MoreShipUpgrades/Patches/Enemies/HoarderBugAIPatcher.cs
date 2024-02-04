@@ -43,9 +43,8 @@ namespace MoreShipUpgrades.Patches.Enemies
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             return Tools.FindFloat(index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Could not find the minimum agent speed when chasing");
         }
-
         [HarmonyPostfix]
-        [HarmonyPatch("IsHoarderBugAngry")]
+        [HarmonyPatch(nameof(HoarderBugAI.IsHoarderBugAngry))]
         private static void MakeHoarderBugSwarmAngry(ref bool __result)
         {
             if (UpgradeBus.instance.contractType != "exterminator") return;
