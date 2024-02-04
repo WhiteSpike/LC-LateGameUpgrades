@@ -26,13 +26,13 @@ namespace MoreShipUpgrades.Patches.Enemies
         private static IEnumerable<CodeInstruction> Update_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            FieldInfo currentChaseSpeed = typeof(SpringManAI).GetField("currentChaseSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+            FieldInfo currentChaseSpeed = typeof(SpringManAI).GetField(nameof(SpringManAI.currentChaseSpeed), BindingFlags.NonPublic | BindingFlags.Instance);
             MethodInfo peeperMethod = typeof(Peeper).GetMethod(nameof(Peeper.HasLineOfSightToPeepers));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindField(index, ref codes, findField: currentChaseSpeed, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the current chase speed field");
-            index = Tools.FindInteger(index, ref codes, findValue: 0, addCode: peeperMethod, requireInstance: true, orInstruction: true, errorMessage: "Couldn't find the value attributed to stop movement local variable");
-            index = Tools.FindField(index, ref codes, findField: currentChaseSpeed, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the current chase speed field second time");
+            Tools.FindField(ref index, ref codes, findField: currentChaseSpeed, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the current chase speed field");
+            Tools.FindInteger(ref index, ref codes, findValue: 0, addCode: peeperMethod, requireInstance: true, orInstruction: true, errorMessage: "Couldn't find the value attributed to stop movement local variable");
+            Tools.FindField(ref index, ref codes, findField: currentChaseSpeed, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the current chase speed field second time");
             return codes;
         }
 
@@ -43,7 +43,7 @@ namespace MoreShipUpgrades.Patches.Enemies
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindFloat(index, ref codes, findValue: 6f, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed value when patrolling");
+            Tools.FindFloat(ref index, ref codes, findValue: 6f, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed value when patrolling");
             return codes;
         }
     }

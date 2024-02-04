@@ -29,56 +29,56 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentSpeedWhenOnWall(index, ref codes);
-            index = PatchAgentSpeedWhenPatrolling(index, ref codes);
-            index = PatchAgentSpeedWhenOnWallStartChase(index, ref codes);
-            index = PatchAgentSpeedWhenChasing(index, ref codes);
-            index = PatchAgentSpeedWhenInjuredChasing(index, ref codes);
-            index = PatchAgentSpeedWhenAlmostDeadChasing(index, ref codes);
-            index = PatchAgentSpeedWhenHittingPlayer(index, ref codes);
+            PatchAgentSpeedWhenOnWall(ref index, ref codes);
+            PatchAgentSpeedWhenPatrolling(ref index, ref codes);
+            PatchAgentSpeedWhenOnWallStartChase(ref index, ref codes);
+            PatchAgentSpeedWhenChasing(ref index, ref codes);
+            PatchAgentSpeedWhenInjuredChasing(ref index, ref codes);
+            PatchAgentSpeedWhenAlmostDeadChasing(ref index, ref codes);
+            PatchAgentSpeedWhenHittingPlayer(ref index, ref codes);
             return codes;
         }
-        static int PatchAgentSpeedWhenHittingPlayer(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenHittingPlayer(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: HITTING_PLAYER_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when hitting player");
-            return index = Tools.FindFloat(index, ref codes, findValue: SPIDER_HITTING_PLAYER_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when hitting player");
+            Tools.FindFloat(ref index, ref codes, findValue: HITTING_PLAYER_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when hitting player");
+            Tools.FindFloat(ref index, ref codes, findValue: SPIDER_HITTING_PLAYER_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when hitting player");
         }
-        static int PatchAgentSpeedWhenAlmostDeadChasing(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenAlmostDeadChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: ALMOST_DEAD_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when chasing in 1 health");
-            return index = Tools.FindFloat(index, ref codes, findValue: ALMOST_DEAD_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when chasing in 1 health");
+            Tools.FindFloat(ref index, ref codes, findValue: ALMOST_DEAD_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when chasing in 1 health");
+            Tools.FindFloat(ref index, ref codes, findValue: ALMOST_DEAD_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when chasing in 1 health");
         }
-        static int PatchAgentSpeedWhenInjuredChasing(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenInjuredChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: INJURED_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when chasing in 2 health");
-            return index = Tools.FindFloat(index, ref codes, findValue: INJURED_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when chasing in 2 health");
+            Tools.FindFloat(ref index, ref codes, findValue: INJURED_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when chasing in 2 health");
+            Tools.FindFloat(ref index, ref codes, findValue: INJURED_CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when chasing in 2 health");
         }
-        static int PatchAgentSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when chasing");
-            return index = Tools.FindFloat(index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when chasing");
         }
-        static int PatchAgentSpeedWhenOnWallStartChase(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenOnWallStartChase(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: GETTING_OFF_WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when on wall and start chasing");
-            return index = Tools.FindFloat(index, ref codes, findValue: GETTING_OFF_WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when on wall and start chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: GETTING_OFF_WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when on wall and start chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: GETTING_OFF_WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when on wall and start chasing");
         }
-        static int PatchAgentSpeedWhenOnWall(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenOnWall(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when on wall");
-            return index = Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when on wall");
+            Tools.FindFloat(ref index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when on wall");
+            Tools.FindFloat(ref index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when on wall");
         }
-        static int PatchAgentSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenPatrolling(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            index = Tools.FindFloat(index, ref codes, findValue: WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when patrolling");
-            return index = Tools.FindFloat(index, ref codes, findValue: SPIDER_WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when patrolling");
+            Tools.FindFloat(ref index, ref codes, findValue: WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the agent speed for spider when patrolling");
+            Tools.FindFloat(ref index, ref codes, findValue: SPIDER_WALL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find the spider speed for spider when patrolling");
         }
     }
 }

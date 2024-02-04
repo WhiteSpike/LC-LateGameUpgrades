@@ -12,19 +12,19 @@ namespace MoreShipUpgrades.Patches.Enemies
     internal class CentipedeAIPatcher
     {
         const float MAXIMUM_SPEED = 5.5f;
-        [HarmonyPatch("IncreaseSpeedSlowly")]
+        [HarmonyPatch(nameof(CentipedeAI.IncreaseSpeedSlowly))]
         [HarmonyTranspiler]
         private static IEnumerable<CodeInstruction> IncreaseSpeedSlowlyTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentMaximumSpeedWhenChasing(index, ref codes);
+            PatchAgentMaximumSpeedWhenChasing(ref index, ref codes);
             return codes;
         }
-        private static int PatchAgentMaximumSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentMaximumSpeedWhenChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find maximum agent speed when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find maximum agent speed when chasing");
         }
     }
 }

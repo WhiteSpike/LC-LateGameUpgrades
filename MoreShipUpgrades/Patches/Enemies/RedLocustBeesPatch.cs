@@ -23,7 +23,7 @@ namespace MoreShipUpgrades.Patches.Enemies
             MethodInfo damagePlayer = typeof(PlayerControllerB).GetMethod(nameof(PlayerControllerB.DamagePlayer));
             List<CodeInstruction> codes = instructions.ToList();
             int index = 0;
-            index = Tools.FindInteger(index, ref codes, findValue: 10, addCode: beeReduceDamage, errorMessage: "Couldn't find damage number for player");
+            Tools.FindInteger(ref index, ref codes, findValue: 10, addCode: beeReduceDamage, errorMessage: "Couldn't find damage number for player");
             return codes.AsEnumerable();
         }
 

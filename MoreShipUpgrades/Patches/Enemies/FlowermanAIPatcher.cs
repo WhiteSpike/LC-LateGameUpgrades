@@ -22,10 +22,10 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAngetMaximumSpeedWhenCarryingBody(index, ref codes);
-            index = PatchAngetMaximumSpeedWhenPatrolling(index, ref codes);
-            index = PatchAngetMaximumSpeedWhenPatrolling(index, ref codes);
-            index = PatchAngetMaximumSpeedWhenChasing(index, ref codes);
+            PatchAngetMaximumSpeedWhenCarryingBody(ref index, ref codes);
+            PatchAngetMaximumSpeedWhenPatrolling(ref index, ref codes);
+            PatchAngetMaximumSpeedWhenPatrolling(ref index, ref codes);
+            PatchAngetMaximumSpeedWhenChasing(ref index, ref codes);
             return codes;
         }
 
@@ -35,28 +35,28 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentSpeedWhenAngry(index, ref codes);
+            PatchAgentSpeedWhenAngry(ref index, ref codes);
             return codes;
         }
-        static int PatchAngetMaximumSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
+        static void PatchAngetMaximumSpeedWhenChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_ANGRY_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: MAXIMUM_ANGRY_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
         }
-        static int PatchAngetMaximumSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
+        static void PatchAngetMaximumSpeedWhenPatrolling(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when patrolling");
+            Tools.FindFloat(ref index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when patrolling");
         }
-        static int PatchAngetMaximumSpeedWhenCarryingBody(int index, ref List<CodeInstruction> codes)
+        static void PatchAngetMaximumSpeedWhenCarryingBody(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_CARRYING_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find maximum agent speed when carrying body");
+            Tools.FindFloat(ref index, ref codes, findValue: MAXIMUM_CARRYING_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find maximum agent speed when carrying body");
         }
-        static int PatchAgentSpeedWhenAngry(int index, ref List<CodeInstruction> codes)
+        static void PatchAgentSpeedWhenAngry(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: INITIAL_ANGRY_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when entering angry mode");
+            Tools.FindFloat(ref index, ref codes, findValue: INITIAL_ANGRY_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when entering angry mode");
         }
     }
 }

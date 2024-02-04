@@ -19,7 +19,7 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentMaximumSpeedWhenChasing(index, ref codes);
+            PatchAgentMaximumSpeedWhenChasing(ref index, ref codes);
             return codes;
         }
         [HarmonyPatch(nameof(JesterAI.DoAIInterval))]
@@ -28,18 +28,18 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentSpeedAfterStun(index, ref codes);
+            PatchAgentSpeedAfterStun(ref index, ref codes);
             return codes;
         }
-        private static int PatchAgentMaximumSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentMaximumSpeedWhenChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
         }
-        private static int PatchAgentSpeedAfterStun(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentSpeedAfterStun(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: INITIAL_SPEED_AFTER_STUN, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: INITIAL_SPEED_AFTER_STUN, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when chasing");
         }
     }
 }

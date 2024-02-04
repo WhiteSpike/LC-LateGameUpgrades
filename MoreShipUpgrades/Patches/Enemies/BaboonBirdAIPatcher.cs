@@ -23,26 +23,26 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentSpeedWhenPatrolling(index, ref codes);
-            index = PatchAgentSpeedWhenChasing(index, ref codes);
-            index = PatchAgentSpeedWhenGettingComfortable(index, ref codes);
-            index = PatchAgentSpeedWhenGettingComfortable(index, ref codes);
+            PatchAgentSpeedWhenPatrolling(ref index, ref codes);
+            PatchAgentSpeedWhenChasing(ref index, ref codes);
+            PatchAgentSpeedWhenGettingComfortable(ref index, ref codes);
+            PatchAgentSpeedWhenGettingComfortable(ref index, ref codes);
             return codes;
         }
-        private static int PatchAgentSpeedWhenGettingComfortable(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentSpeedWhenGettingComfortable(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: COMFORTABLE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when waking up");
+            Tools.FindFloat(ref index, ref codes, findValue: COMFORTABLE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when waking up");
         }
-        private static int PatchAgentSpeedWhenChasing(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentSpeedWhenChasing(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when chasing");
+            Tools.FindFloat(ref index, ref codes, findValue: CHASE_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when chasing");
         }
-        private static int PatchAgentSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentSpeedWhenPatrolling(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when patrolling");
+            Tools.FindFloat(ref index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when patrolling");
         }
         [HarmonyPatch(nameof(BaboonBirdAI.DoLOSCheck))]
         [HarmonyTranspiler]
@@ -50,7 +50,7 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = PatchCheckItemInWheelbarrow(index, ref codes);
+            PatchCheckItemInWheelbarrow(ref index, ref codes);
             return codes;
         }
 
@@ -62,7 +62,7 @@ namespace MoreShipUpgrades.Patches.Enemies
         /// <param name="index">Current index transpiling through the code instructions of a given method</param>
         /// <param name="codes">Code instructions of a given method</param>
         /// <returns>Index in which it found the necessary code instruction to make replacements or the end if it didn't find any (this means that our comparisons are wrong)</returns>
-        private static int PatchCheckItemInWheelbarrow(int index, ref List<CodeInstruction> codes)
+        private static void PatchCheckItemInWheelbarrow(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkIfInWheelbarrow = typeof(WheelbarrowScript).GetMethod(nameof(WheelbarrowScript.CheckIfItemInWheelbarrow));
             for (; index < codes.Count; index++)
@@ -75,7 +75,7 @@ namespace MoreShipUpgrades.Patches.Enemies
                 codes.Insert(index + 3, new CodeInstruction(OpCodes.Ldloc_S, codes[index].operand));
                 break;
             }
-            return index + 1;
+            index++;
         }
     }
 }

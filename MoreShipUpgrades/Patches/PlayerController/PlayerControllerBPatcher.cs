@@ -111,9 +111,9 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo reduceFallDamageMethod = typeof(strongLegsScript).GetMethod(nameof(strongLegsScript.ReduceFallDamage));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 100 fall damage");
-            index = Tools.FindInteger(index, ref codes, findValue: 50, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 50 fall damage");
-            index = Tools.FindInteger(index, ref codes, findValue: 30, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 30 fall damage");
+            Tools.FindInteger(ref index, ref codes, findValue: 100, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 100 fall damage");
+            Tools.FindInteger(ref index, ref codes, findValue: 50, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 50 fall damage");
+            Tools.FindInteger(ref index, ref codes, findValue: 30, addCode: reduceFallDamageMethod, errorMessage: "Couldn't find 30 fall damage");
 
             return codes.AsEnumerable();
         }
@@ -139,7 +139,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindSub(index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
+            Tools.FindSub(ref index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
 
             return codes;
         }
@@ -151,7 +151,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindSub(index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
+            Tools.FindSub(ref index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
 
             return codes;
         }
@@ -176,7 +176,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindSub(index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
+            Tools.FindSub(ref index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
 
             return codes;
         }
@@ -188,7 +188,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindSub(index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
+            Tools.FindSub(ref index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
 
             return codes;
         }
@@ -199,7 +199,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindSub(index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
+            Tools.FindSub(ref index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
 
             return codes;
         }
@@ -210,7 +210,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo affectWeight = typeof(exoskeletonScript).GetMethod(nameof(exoskeletonScript.DecreasePossibleWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindSub(index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
+            Tools.FindSub(ref index, ref codes, addCode: affectWeight, errorMessage: "Couldn't find item weight");
 
             return codes;
         }
@@ -252,14 +252,14 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo biggerLungsRegenMethod = typeof(biggerLungScript).GetMethod(nameof(biggerLungScript.ApplyPossibleIncreasedStaminaRegen));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip first mul instruction");
-            index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip second mul instruction");
-            index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip third mul instruction");
-            index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip fourth mul instruction");
-            index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip fifth mul instruction");
-            index = Tools.FindMul(index, ref codes, skip: true, errorMessage: "Couldn't skip sixth mul instruction");
-            index = Tools.FindMul(index, ref codes, addCode: biggerLungsRegenMethod, errorMessage: "Couldn't find first mul instruction to include our regen method from Bigger Lungs");
-            index = Tools.FindMul(index, ref codes, addCode: biggerLungsRegenMethod, errorMessage: "Couldn't find second mul instruction to include our regen method from Bigger Lungs");
+            Tools.FindMul(ref index, ref codes, skip: true, errorMessage: "Couldn't skip first mul instruction");
+            Tools.FindMul(ref index, ref codes, skip: true, errorMessage: "Couldn't skip second mul instruction");
+            Tools.FindMul(ref index, ref codes, skip: true, errorMessage: "Couldn't skip third mul instruction");
+            Tools.FindMul(ref index, ref codes, skip: true, errorMessage: "Couldn't skip fourth mul instruction");
+            Tools.FindMul(ref index, ref codes, skip: true, errorMessage: "Couldn't skip fifth mul instruction");
+            Tools.FindMul(ref index, ref codes, skip: true, errorMessage: "Couldn't skip sixth mul instruction");
+            Tools.FindMul(ref index, ref codes, addCode: biggerLungsRegenMethod, errorMessage: "Couldn't find first mul instruction to include our regen method from Bigger Lungs");
+            Tools.FindMul(ref index, ref codes, addCode: biggerLungsRegenMethod, errorMessage: "Couldn't find second mul instruction to include our regen method from Bigger Lungs");
             return codes;
         }
 
@@ -270,7 +270,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo biggerLungsReduceJumpCost = typeof(biggerLungScript).GetMethod(nameof(biggerLungScript.ApplyPossibleReducedJumpStaminaCost));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindFloat(index, ref codes, findValue: 0.08f, addCode: biggerLungsReduceJumpCost, errorMessage: "Couldn't find jump stamina cost");
+            Tools.FindFloat(ref index, ref codes, findValue: 0.08f, addCode: biggerLungsReduceJumpCost, errorMessage: "Couldn't find jump stamina cost");
             return codes;
         }
 
@@ -293,8 +293,8 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo runningShoesReduceNoiseRange = typeof(runningShoeScript).GetMethod(nameof(runningShoeScript.ApplyPossibleReducedNoiseRange));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindFloat(index, ref codes, findValue: 22, addCode: runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
-            index = Tools.FindFloat(index, ref codes, findValue: 17, addCode: runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
+            Tools.FindFloat(ref index, ref codes, findValue: 22, addCode: runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
+            Tools.FindFloat(ref index, ref codes, findValue: 17, addCode: runningShoesReduceNoiseRange, errorMessage: "Couldn't find footstep noise");
             return codes.AsEnumerable();
         }
 
@@ -305,7 +305,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             MethodInfo reduceLookSensitivity = typeof(WheelbarrowScript).GetMethod(nameof(WheelbarrowScript.CheckIfPlayerCarryingWheelbarrowLookSensitivity));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindFloat(index, ref codes, findValue: 0.008f, addCode: reduceLookSensitivity, errorMessage: "Couldn't find look sensitivity value we wanted to influence");
+            Tools.FindFloat(ref index, ref codes, findValue: 0.008f, addCode: reduceLookSensitivity, errorMessage: "Couldn't find look sensitivity value we wanted to influence");
             return codes;
         }
 
@@ -317,9 +317,9 @@ namespace MoreShipUpgrades.Patches.PlayerController
             FieldInfo carryWeight = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.carryWeight));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindField(index, ref codes, findField: carryWeight, skip: true, errorMessage: "Couldn't find ignore first occurence");
-            index = Tools.FindField(index, ref codes, findField: carryWeight, addCode: reduceMovement, errorMessage: "Couldn't find second occurence");
-            index = Tools.FindField(index, ref codes, findField: carryWeight, addCode: reduceMovement, errorMessage: "Couldn't find third occurence");
+            Tools.FindField(ref index, ref codes, findField: carryWeight, skip: true, errorMessage: "Couldn't find ignore first occurence");
+            Tools.FindField(ref index, ref codes, findField: carryWeight, addCode: reduceMovement, errorMessage: "Couldn't find second occurence");
+            Tools.FindField(ref index, ref codes, findField: carryWeight, addCode: reduceMovement, errorMessage: "Couldn't find third occurence");
             return codes;
         }
 
@@ -331,7 +331,7 @@ namespace MoreShipUpgrades.Patches.PlayerController
             FieldInfo isMenuOpen = typeof(QuickMenuManager).GetField(nameof(QuickMenuManager.isMenuOpen));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            index = Tools.FindField(index, ref codes, findField: isMenuOpen, addCode: carryingWheelbarrow, orInstruction: true, requireInstance: true, errorMessage: "Couldn't find isMenuOpen field");
+            Tools.FindField(ref index, ref codes, findField: isMenuOpen, addCode: carryingWheelbarrow, orInstruction: true, requireInstance: true, errorMessage: "Couldn't find isMenuOpen field");
             return codes;
         }
     }

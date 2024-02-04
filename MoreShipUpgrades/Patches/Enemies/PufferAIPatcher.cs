@@ -19,21 +19,21 @@ namespace MoreShipUpgrades.Patches.Enemies
         {
             int index = 0;
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            index = PatchAgentSpeedWhenPatrolling(index, ref codes);
-            index = PatchAgentSpeedWhenPatrolling(index, ref codes);
-            index = PatchAgentMaximumSpeedWhenRunning(index, ref codes);
-            index = PatchAgentMaximumSpeedWhenRunning(index, ref codes);
+            PatchAgentSpeedWhenPatrolling(ref index, ref codes);
+            PatchAgentSpeedWhenPatrolling(ref index, ref codes);
+            PatchAgentMaximumSpeedWhenRunning(ref index, ref codes);
+            PatchAgentMaximumSpeedWhenRunning(ref index, ref codes);
             return codes;
         }
-        private static int PatchAgentSpeedWhenPatrolling(int index, ref List<CodeInstruction> codes) 
+        private static void PatchAgentSpeedWhenPatrolling(ref int index, ref List<CodeInstruction> codes) 
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when patrolling");
+            Tools.FindFloat(ref index, ref codes, findValue: PATROL_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent speed when patrolling");
         }
-        private static int PatchAgentMaximumSpeedWhenRunning(int index, ref List<CodeInstruction> codes)
+        private static void PatchAgentMaximumSpeedWhenRunning(ref int index, ref List<CodeInstruction> codes)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
-            return Tools.FindFloat(index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when running");
+            Tools.FindFloat(ref index, ref codes, findValue: MAXIMUM_SPEED, addCode: checkForBarbedWire, requireInstance: true, errorMessage: "Couldn't find agent maximum speed when running");
         }
     }
 }

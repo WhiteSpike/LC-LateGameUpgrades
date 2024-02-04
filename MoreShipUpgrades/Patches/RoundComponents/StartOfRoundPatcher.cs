@@ -63,10 +63,10 @@ namespace MoreShipUpgrades.Patches.RoundComponents
             var maximumHealthMethod = typeof(playerHealthScript).GetMethod(nameof(playerHealthScript.CheckForAdditionalHealth));
             List<CodeInstruction> codes = instructions.ToList();
             int index = 0;
-            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find maximum health on update health UI");
-            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find first maximum health on player's health attribute");
-            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find second maximum health on player's health attribute");
-            index = Tools.FindInteger(index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find third maximum health on player's health attribute");
+            Tools.FindInteger(ref index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find maximum health on update health UI");
+            Tools.FindInteger(ref index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find first maximum health on player's health attribute");
+            Tools.FindInteger(ref index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find second maximum health on player's health attribute");
+            Tools.FindInteger(ref index, ref codes, findValue: 100, addCode: maximumHealthMethod, errorMessage: "Couldn't find third maximum health on player's health attribute");
             return codes.AsEnumerable();
         }
 
