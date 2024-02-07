@@ -19,8 +19,7 @@ namespace MoreShipUpgrades.Patches.Enemies
         [HarmonyPatch(nameof(RedLocustBees.OnCollideWithPlayer))]
         public static IEnumerable<CodeInstruction> OnCollideWithPlayer_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo beeReduceDamage = typeof(beekeeperScript).GetMethod(nameof(beekeeperScript.CalculateBeeDamage));
-            MethodInfo damagePlayer = typeof(PlayerControllerB).GetMethod(nameof(PlayerControllerB.DamagePlayer));
+            MethodInfo beeReduceDamage = typeof(Beekeeper).GetMethod(nameof(Beekeeper.CalculateBeeDamage));
             List<CodeInstruction> codes = instructions.ToList();
             int index = 0;
             Tools.FindInteger(ref index, ref codes, findValue: 10, addCode: beeReduceDamage, errorMessage: "Couldn't find damage number for player");
@@ -31,7 +30,7 @@ namespace MoreShipUpgrades.Patches.Enemies
         [HarmonyPatch(nameof(RedLocustBees.SpawnHiveClientRpc))]
         public static IEnumerable<CodeInstruction> SpawnHiveClientRpcTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            MethodInfo beeIncreaseHiveValue = typeof(beekeeperScript).GetMethod(nameof(beekeeperScript.GetHiveScrapValue));
+            MethodInfo beeIncreaseHiveValue = typeof(Beekeeper).GetMethod(nameof(Beekeeper.GetHiveScrapValue));
 
             List<CodeInstruction> codes = instructions.ToList();
             bool found = false;

@@ -25,6 +25,10 @@ using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
 using MoreShipUpgrades.UpgradeComponents.Commands;
 using MoreShipUpgrades.UpgradeComponents.Items.BarbedWire;
+using MoreShipUpgrades.UpgradeComponents.Interfaces;
+using HarmonyLib.Tools;
+using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
+using UnityEngine.Profiling;
 
 namespace MoreShipUpgrades
 {
@@ -111,7 +115,7 @@ namespace MoreShipUpgrades
                     catch (Exception e)
                     {
                         // ignore mod if error, removing dependency
-                        mls.LogDebug($"Failed to send info to ModSync, go yell at Minx");
+                        mls.LogDebug($"Failed to send info to ModSync, go yell at Minx for {e.StackTrace}");
                     }
                     break;
                 }
@@ -133,6 +137,7 @@ namespace MoreShipUpgrades
         void SetupBombContract(ref AssetBundle bundle, AnimationCurve curve)
         {
             Item bomb = AssetBundleHandler.TryLoadItemAsset(ref bundle, root + "BombItem.asset");
+            bomb.spawnPrefab.AddComponent<ScrapValueSyncer>();
             if (bomb == null) return;
             bomb.isConductiveMetal = false;
             DefusalContract coNest = bomb.spawnPrefab.AddComponent<DefusalContract>();
@@ -203,6 +208,7 @@ namespace MoreShipUpgrades
         void SetupExterminatorContract(ref AssetBundle bundle, AnimationCurve curve)
         {
             Item bugLoot = AssetBundleHandler.TryLoadItemAsset(ref bundle, root + "EggLootItem.asset");
+            bugLoot.spawnPrefab.AddComponent<ScrapValueSyncer>();
             Items.RegisterItem(bugLoot);
             Utilities.FixMixerGroups(bugLoot.spawnPrefab);
             NetworkPrefabs.RegisterNetworkPrefab(bugLoot.spawnPrefab);
@@ -236,6 +242,7 @@ namespace MoreShipUpgrades
             co.SetPosition = true;
 
             ExtractPlayerScript extractScript = scav.spawnPrefab.AddComponent<ExtractPlayerScript>();
+            scav.spawnPrefab.AddComponent<ScrapValueSyncer>();
             TextAsset scavAudioPaths = AssetBundleHandler.TryLoadOtherAsset<TextAsset>(ref bundle, root + "scavSounds/scavAudio.json");
             Dictionary<string, string[]> scavAudioDict = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(scavAudioPaths.text);
             ExtractPlayerScript.clipDict.Add("lost", CreateAudioClipArray(scavAudioDict["lost"], ref bundle));
@@ -256,6 +263,7 @@ namespace MoreShipUpgrades
         void SetupDataContract(ref AssetBundle bundle, AnimationCurve curve)
         {
             Item dataLoot = AssetBundleHandler.TryLoadItemAsset(ref bundle, root + "DiscItem.asset");
+            dataLoot.spawnPrefab.AddComponent<ScrapValueSyncer>();
             Items.RegisterItem(dataLoot);
             Utilities.FixMixerGroups(dataLoot.spawnPrefab);
             NetworkPrefabs.RegisterNetworkPrefab(dataLoot.spawnPrefab);
@@ -348,6 +356,7 @@ namespace MoreShipUpgrades
                 sampleScript.itemProperties = sample;
                 sampleScript.itemProperties.minValue = MINIMUM_VALUES[creatureName];
                 sampleScript.itemProperties.maxValue = MAXIMUM_VALUES[creatureName];
+                sample.spawnPrefab.AddComponent<ScrapValueSyncer>();
                 LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(sample.spawnPrefab);
                 UpgradeBus.instance.samplePrefabs.Add(creatureName, sample.spawnPrefab);
             }
@@ -381,11 +390,21 @@ namespace MoreShipUpgrades
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(helmet.spawnPrefab);
 
             UpgradeBus.instance.ItemsToSync.Add("Helmet", helmet);
-
-            TerminalNode node = ScriptableObject.CreateInstance<TerminalNode>();
-            node.displayText = string.Format(AssetBundleHandler.GetInfoFromJSON("Helmet"), cfg.HELMET_HITS_BLOCKED);
-            Items.RegisterShopItem(helmet, null, null, node, helmet.creditsWorth);
-
+            SetupStoreItem(helmet);
+        }
+        private TerminalNode SetupInfoNode(Item storeItem)
+        {
+            TerminalNode infoNode = ScriptableObject.CreateInstance<TerminalNode>();
+            GrabbableObject grabbableObject = storeItem.spawnPrefab.GetComponent<GrabbableObject>();
+            if (grabbableObject is IDisplayInfo displayInfo) infoNode.displayText += displayInfo.GetDisplayInfo() + "\n";
+            if (grabbableObject is IItemWorldBuilding worldBuilding) infoNode.displayText += worldBuilding.GetWorldBuildingText() + "\n";
+            infoNode.clearPreviousText = true;
+            return infoNode;
+        }
+        private void SetupStoreItem(Item storeItem)
+        {
+            TerminalNode infoNode = SetupInfoNode(storeItem);
+            Items.RegisterShopItem(shopItem: storeItem, itemInfo: infoNode, price: storeItem.creditsWorth);
         }
         private void SetupRegularTeleporterButton()
         {
@@ -407,10 +426,7 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("Tele", regularPortableTeleporter);
 
-            TerminalNode PortNode = ScriptableObject.CreateInstance<TerminalNode>();
-            PortNode.displayText = string.Format(AssetBundleHandler.GetInfoFromJSON("Portable Tele"), (int)(cfg.CHANCE_TO_BREAK * 100));
-
-            Items.RegisterShopItem(regularPortableTeleporter, null, null, PortNode, regularPortableTeleporter.creditsWorth);
+            SetupStoreItem(regularPortableTeleporter);
         }
         private void SetupAdvancedTeleporterButton()
         {
@@ -432,10 +448,7 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("AdvTele", advancedPortableTeleporter);
 
-            TerminalNode advNode = ScriptableObject.CreateInstance<TerminalNode>();
-            advNode.displayText = string.Format(AssetBundleHandler.GetInfoFromJSON("Advanced Portable Tele"), (int)(cfg.ADV_CHANCE_TO_BREAK * 100));
-            Items.RegisterShopItem(advancedPortableTeleporter, null, null, advNode, advancedPortableTeleporter.creditsWorth);
-
+            SetupStoreItem(advancedPortableTeleporter);
         }
 
         private void SetupNightVision()
@@ -456,12 +469,7 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("Night", nightVisionItem);
 
-            TerminalNode nightNode = ScriptableObject.CreateInstance<TerminalNode>();
-            string grantStatus = cfg.NIGHT_VISION_INDIVIDUAL || UpgradeBus.instance.cfg.SHARED_UPGRADES ? "one" : "all";
-            string loseOnDeath = cfg.LOSE_NIGHT_VIS_ON_DEATH ? "be" : "not be";
-            nightNode.displayText = string.Format(AssetBundleHandler.GetInfoFromJSON("Night Vision"), grantStatus, loseOnDeath);
-            Items.RegisterShopItem(nightVisionItem, null, null, nightNode, nightVisionItem.creditsWorth);
-
+            SetupStoreItem(nightVisionItem);
         }
         private void SetupDivingKit()
         {
@@ -481,11 +489,7 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("Dive",DiveItem);
 
-            TerminalNode medNode = ScriptableObject.CreateInstance<TerminalNode>();
-            string hands = cfg.DIVEKIT_TWO_HANDED ? "two" : "one";
-            medNode.displayText = $"DIVING KIT - ${cfg.DIVEKIT_PRICE}\n\nBreath underwater.\nWeights {Mathf.RoundToInt((DiveItem.weight -1 )*100)} lbs and is {hands} handed.\n\n";
-            Items.RegisterShopItem(DiveItem, null, null,medNode, DiveItem.creditsWorth);
-
+            SetupStoreItem(DiveItem);
         }
         private void SetupMedkit()
         {
@@ -504,9 +508,7 @@ namespace MoreShipUpgrades
             medScript.use = buttonPressed;
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(MedKitItem.spawnPrefab);
 
-            TerminalNode medNode = ScriptableObject.CreateInstance<TerminalNode>();
-            medNode.displayText = string.Format("MEDKIT - ${0}\n\nLeft click to heal yourself for {1} health.\nCan be used {2} times.\n", cfg.MEDKIT_PRICE, cfg.MEDKIT_HEAL_VALUE, cfg.MEDKIT_USES);
-            Items.RegisterShopItem(MedKitItem, null, null,medNode, MedKitItem.creditsWorth);
+            SetupStoreItem(MedKitItem);
 
             Item MedKitMapItem = AssetBundleHandler.GetItemObject("MedkitMapItem");
             if (MedKitMapItem == null) return;
@@ -545,9 +547,7 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("Peeper", Peeper);
 
-            TerminalNode peepNode = ScriptableObject.CreateInstance<TerminalNode>();
-            peepNode.displayText = "Looks at coil heads, don't lose it\n";
-            LethalLib.Modules.Items.RegisterShopItem(Peeper, null, null, peepNode, Peeper.creditsWorth);
+            SetupStoreItem(Peeper);
         }
         private void SetupWheelbarrows()
         {
@@ -581,11 +581,12 @@ namespace MoreShipUpgrades
             wheelbarrow.isConductiveMetal = true;
             wheelbarrow.isScrap = true;
             wheelbarrow.weight = 0.99f + (cfg.SCRAP_WHEELBARROW_WEIGHT/100f);
-            wheelbarrow.toolTips = new string[] { "Drop all items: [MMB]" };
             wheelbarrow.canBeGrabbedBeforeGameStart = true;
             ScrapWheelbarrow barrowScript = wheelbarrow.spawnPrefab.AddComponent<ScrapWheelbarrow>();
+            wheelbarrow.toolTips = SetupWheelbarrowTooltips();
             barrowScript.itemProperties = wheelbarrow;
             barrowScript.wheelsClip = shoppingCartSound;
+            wheelbarrow.spawnPrefab.AddComponent<ScrapValueSyncer>();
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(wheelbarrow.spawnPrefab);
             LethalLib.Modules.Items.RegisterItem(wheelbarrow);
             Utilities.FixMixerGroups(wheelbarrow.spawnPrefab);
@@ -613,9 +614,9 @@ namespace MoreShipUpgrades
             wheelbarrow.allowDroppingAheadOfPlayer = true;
             wheelbarrow.isConductiveMetal = true;
             wheelbarrow.weight = 0.99f + (cfg.WHEELBARROW_WEIGHT/100f);
-            wheelbarrow.toolTips = new string[] { "Drop all items: [MMB] " };
             wheelbarrow.canBeGrabbedBeforeGameStart = true;
             StoreWheelbarrow barrowScript = wheelbarrow.spawnPrefab.AddComponent<StoreWheelbarrow>();
+            wheelbarrow.toolTips = SetupWheelbarrowTooltips();
             barrowScript.itemProperties = wheelbarrow;
             barrowScript.wheelsClip = wheelbarrowSound;
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(wheelbarrow.spawnPrefab);
@@ -623,9 +624,28 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("Wheel", wheelbarrow);
 
-            TerminalNode wheelbarrowNode = ScriptableObject.CreateInstance<TerminalNode>();
-            wheelbarrowNode.displayText = $"A portable container which has a maximum capacity of {cfg.WHEELBARROW_MAXIMUM_AMOUNT_ITEMS} and reduces the effective weight of the inserted items by {cfg.WHEELBARROW_WEIGHT_REDUCTION_MULTIPLIER*100} %.\nIt weighs {1f + (cfg.WHEELBARROW_WEIGHT/100f)} lbs";
-            LethalLib.Modules.Items.RegisterShopItem(wheelbarrow, null, null, wheelbarrowNode, wheelbarrow.creditsWorth);
+            SetupStoreItem(wheelbarrow);
+        }
+        private string[] SetupWheelbarrowTooltips()
+        {
+            bool dropAllItemsKeySet;
+            UnityEngine.InputSystem.Key dropAllItemsKey = UnityEngine.InputSystem.Key.None;
+            bool dropAllItemsMouseButtonSet;
+            UnityEngine.InputSystem.LowLevel.MouseButton dropAllitemsMouseButton = UnityEngine.InputSystem.LowLevel.MouseButton.Middle;
+            string controlBind = UpgradeBus.instance.cfg.WHEELBARROW_DROP_ALL_CONTROL_BIND;
+            if (Enum.TryParse(controlBind, out UnityEngine.InputSystem.Key toggle))
+            {
+                dropAllItemsKey = toggle;
+                dropAllItemsKeySet = true;
+            }
+            else dropAllItemsKeySet = false;
+            if (Enum.TryParse(controlBind, out UnityEngine.InputSystem.LowLevel.MouseButton mouseButton))
+            {
+                dropAllitemsMouseButton = mouseButton;
+                dropAllItemsMouseButtonSet = true;
+            }
+            else dropAllItemsMouseButtonSet = false;
+            return new string[] { $"Drop all items: [{(dropAllItemsKeySet ? dropAllItemsKey : dropAllItemsMouseButtonSet ? dropAllitemsMouseButton : "MMB")}]" };
         }
         private void SetupBarbedWire()
         {
@@ -692,89 +712,89 @@ namespace MoreShipUpgrades
 
         private void SetupSickBeats()
         {
-            SetupGenericPerk<BeatScript>(BeatScript.UPGRADE_NAME);
+            SetupGenericPerk<SickBeats>(SickBeats.UPGRADE_NAME);
         }
 
         private void SetupContract()
         {
-            SetupGenericPerk<ContractScript>(ContractScript.UPGRADE_NAME);
+            SetupGenericPerk<ContractScript>(ContractScript.NAME);
         }
 
         private void SetupBeekeeper()
         {
-            SetupGenericPerk<beekeeperScript>(beekeeperScript.UPGRADE_NAME);
+            SetupGenericPerk<Beekeeper>(Beekeeper.UPGRADE_NAME);
         }
         private void SetupHunter()
         {
-            SetupGenericPerk<hunterScript>(hunterScript.UPGRADE_NAME);
+            SetupGenericPerk<Hunter>(Hunter.UPGRADE_NAME);
         }
         private void SetupProteinPowder() 
         {
-            SetupGenericPerk<proteinPowderScript>(proteinPowderScript.UPGRADE_NAME);
+            SetupGenericPerk<ProteinPowder>(ProteinPowder.UPGRADE_NAME);
         }
         private void SetupBiggerLungs()
         {
-            SetupGenericPerk<biggerLungScript>(biggerLungScript.UPGRADE_NAME);
+            SetupGenericPerk<BiggerLungs>(BiggerLungs.UPGRADE_NAME);
         }
         private void SetupRunningShoes() 
         {
-            SetupGenericPerk<runningShoeScript>(runningShoeScript.UPGRADE_NAME);
+            SetupGenericPerk<RunningShoes>(RunningShoes.UPGRADE_NAME);
         }
         private void SetupStrongLegs() 
         {
-            SetupGenericPerk<strongLegsScript>(strongLegsScript.UPGRADE_NAME);
+            SetupGenericPerk<StrongLegs>(StrongLegs.UPGRADE_NAME);
         }
         private void SetupMalwareBroadcaster()
         {
-            SetupGenericPerk<trapDestroyerScript>(trapDestroyerScript.UPGRADE_NAME);
+            SetupGenericPerk<MalwareBroadcaster>(MalwareBroadcaster.UPGRADE_NAME);
         }
         private void SetupNightVisionBattery() 
         {
-            SetupGenericPerk<nightVisionScript>(nightVisionScript.UPGRADE_NAME);
+            SetupGenericPerk<NightVision>(NightVision.UPGRADE_NAME);
         }
         private void SetupDiscombobulator()
         {
             AudioClip flashSFX = AssetBundleHandler.GetAudioClip("Flashbang");
             if (flashSFX != null) UpgradeBus.instance.flashNoise = flashSFX;
 
-            SetupGenericPerk<terminalFlashScript>(terminalFlashScript.UPGRADE_NAME);
+            SetupGenericPerk<Discombobulator>(Discombobulator.UPGRADE_NAME);
         }
         private void SetupBetterScanner()
         {
-            SetupGenericPerk<strongerScannerScript>(strongerScannerScript.UPGRADE_NAME);
+            SetupGenericPerk<BetterScanner>(BetterScanner.UPGRADE_NAME);
         }
         private void SetupWalkieGPS()
         {
-            SetupGenericPerk<walkieScript>(walkieScript.UPGRADE_NAME);
+            SetupGenericPerk<WalkieGPS>(WalkieGPS.UPGRADE_NAME);
 
         }
         private void SetupBackMuscles()
         {
-            SetupGenericPerk<exoskeletonScript>(exoskeletonScript.UPGRADE_NAME);
+            SetupGenericPerk<BackMuscles>(BackMuscles.UPGRADE_NAME);
         }
         private void SetupInterns()
         {
-            SetupGenericPerk<defibScript>(defibScript.UPGRADE_NAME);
+            SetupGenericPerk<Interns>(Interns.UPGRADE_NAME);
         }
         private void SetupPager()
         {
-            SetupGenericPerk<pagerScript>(pagerScript.UPGRADE_NAME);
+            SetupGenericPerk<FastEncryption>(FastEncryption.UPGRADE_NAME);
         }
         private void SetupLightningRod()
         {
-            SetupGenericPerk<lightningRodScript>(lightningRodScript.UPGRADE_NAME);
+            SetupGenericPerk<LightningRod>(LightningRod.UPGRADE_NAME);
         }
         private void SetupLocksmith()
         {
-            SetupGenericPerk<lockSmithScript>(lockSmithScript.UPGRADE_NAME);
+            SetupGenericPerk<LockSmith>(LockSmith.UPGRADE_NAME);
         }
         private void SetupPlayerHealth()
         {
-            SetupGenericPerk<playerHealthScript>(playerHealthScript.UPGRADE_NAME);
+            SetupGenericPerk<Stimpack>(Stimpack.UPGRADE_NAME);
         }
         private void SetupExtendDeadline()
         {
-            SetupGenericPerk<ExtendDeadlineScript>(ExtendDeadlineScript.UPGRADE_NAME);
+            SetupGenericPerk<ExtendDeadlineScript>(ExtendDeadlineScript.NAME);
         }
         private void SetupDoorsHydraulicsBattery()
         {

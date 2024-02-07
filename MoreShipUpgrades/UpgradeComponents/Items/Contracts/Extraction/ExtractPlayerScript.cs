@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using MoreShipUpgrades.Managers;
+using MoreShipUpgrades.Misc;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -22,11 +23,8 @@ namespace MoreShipUpgrades.UpgradeComponents.Items.Contracts.Extraction
         void Start()
         {
             prop = GetComponent<PhysicsProp>();
-            prop.scrapValue = UpgradeBus.instance.cfg.CONTRACT_EXTRACT_REWARD;
+            GetComponent<ScrapValueSyncer>().SetScrapValue(UpgradeBus.instance.cfg.CONTRACT_EXTRACT_REWARD);
 
-            ScanNodeProperties node = GetComponentInChildren<ScanNodeProperties>();
-            node.scrapValue = UpgradeBus.instance.cfg.CONTRACT_EXTRACT_REWARD;
-            node.subText = $"VALUE: ${node.scrapValue}";
 
             audio = GetComponent<AudioSource>();
             trig = GetComponentInChildren<InteractTrigger>();

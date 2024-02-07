@@ -1,33 +1,38 @@
 ﻿using GameNetcodeStuff;
 using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc;
+using MoreShipUpgrades.Misc.Upgrades;
+using MoreShipUpgrades.UpgradeComponents.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
 namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades
 {
-    internal class nightVisionScript : BaseUpgrade
+    internal class NightVision : TierUpgrade
     {
         private float nightBattery;
         private Transform batteryBar;
         private PlayerControllerB client;
         private bool batteryExhaustion;
         private Key toggleKey;
+        internal static NightVision instance;
 
         public static string UPGRADE_NAME = "NV Headset Batteries";
         public static string PRICES_DEFAULT = "300,400,500";
 
-        private static LGULogger logger = new LGULogger(UPGRADE_NAME);
-        void Start()
+        private static LGULogger logger;
+        internal override void Start()
         {
             upgradeName = UPGRADE_NAME;
-            DontDestroyOnLoad(gameObject);
-            Register();
+            logger = new LGULogger(upgradeName);
+            instance = this;
+            base.Start();
             batteryBar = transform.GetChild(0).GetChild(0).transform;
             transform.GetChild(0).gameObject.SetActive(false);
             if (Enum.TryParse(UpgradeBus.instance.cfg.TOGGLE_NIGHT_VISION_KEY, out Key toggle))
@@ -39,11 +44,6 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades
                 logger.LogWarning("Error parsing the key for toggle night vision, defaulted to LeftAlt");
                 toggleKey = Key.LeftAlt;
             }
-        }
-
-        public override void Register()
-        {
-            base.Register();
         }
 
         void LateUpdate()
@@ -141,7 +141,7 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades
             LGUStore.instance.UpdateLGUSaveServerRpc(GameNetworkManager.Instance.localPlayerController.playerSteamId, JsonConvert.SerializeObject(new SaveInfo()));
         }
 
-        public override void load()
+        public override void Load()
         {
             EnableOnClient(false);
         }
@@ -152,6 +152,28 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades
             UpgradeBus.instance.nightVision = false;
             UpgradeBus.instance.nightVisionLevel = 0;
             DisableOnClient();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void EnableNightVisionServerRpc()
+        {
+            logger.LogDebug("Enabling night vision for all clients...");
+            EnableNightVisionClientRpc();
+        }
+
+        [ClientRpc]
+        private void EnableNightVisionClientRpc()
+        {
+            logger.LogDebug("Request to enable night vision on this client received.");
+            EnableOnClient();
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SpawnNightVisionItemOnDeathServerRpc(Vector3 position)
+        {
+            GameObject go = Instantiate(UpgradeBus.instance.nightVisionPrefab, position + Vector3.up, Quaternion.identity);
+            go.GetComponent<NetworkObject>().Spawn();
+            logger.LogInfo("Request to spawn night vision goggles received.");
         }
         public void EnableOnClient(bool save = true)
         {
@@ -200,6 +222,14 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades
                         return string.Format(AssetBundleHandler.GetInfoFromJSON(UPGRADE_NAME), level, price, drainTime, regenTime);
                     }
             }
+        }
+
+        public override string GetDisplayInfo(int initialPrice = -1, int maxLevels = -1, int[] incrementalPrices = null)
+        {
+            string info = GetNightVisionInfo(1, initialPrice);
+            for (int i = 0; i < maxLevels; i++)
+                info += GetNightVisionInfo(i + 2, incrementalPrices[i]);
+            return info;
         }
     }
 }

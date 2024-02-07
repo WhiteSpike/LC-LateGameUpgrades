@@ -1,6 +1,7 @@
 ﻿using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc;
-using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
+using MoreShipUpgrades.UpgradeComponents.Interfaces;
+using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,7 +10,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
     /// <summary>
     /// Logical class which represents an item that can heal the player when activated
     /// </summary>
-    internal class Medkit : GrabbableObject
+    internal class Medkit : GrabbableObject, IDisplayInfo
     {
         /// <summary>
         /// Logger of the class
@@ -64,7 +65,7 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
         /// </summary>
         private void AttemptToHealPlayer()
         {
-            int health = UpgradeBus.instance.playerHealthLevels.ContainsKey(playerHeldBy.playerSteamId) ? playerHealthScript.GetHealthFromPlayer(100, playerHeldBy.playerSteamId) : 100;
+            int health = UpgradeBus.instance.playerHealthLevels.ContainsKey(playerHeldBy.playerSteamId) ? Stimpack.GetHealthFromPlayer(100, playerHeldBy.playerSteamId) : 100;
             if (!CanUseMedkit(health)) return;
             UseMedkit(health);
         }
@@ -83,7 +84,8 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
             {
                 heal_value -= potentialHealth - maximumHealth;
             }
-            playerHeldBy.DamagePlayer(-heal_value, false, true, CauseOfDeath.Unknown, 0, false, Vector3.zero);
+            playerHeldBy.health += heal_value;
+
             if (uses >= maximumUses)
             {
                 itemUsedUp = true;
@@ -112,6 +114,13 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
                 return false;
             }
             return true;
+        }
+
+        public string GetDisplayInfo()
+        {
+            return $"MEDKIT - ${UpgradeBus.instance.cfg.MEDKIT_PRICE}\n\n" +
+                $"Left click to heal yourself for {UpgradeBus.instance.cfg.MEDKIT_HEAL_VALUE} health.\n" +
+                $"Can be used {UpgradeBus.instance.cfg.MEDKIT_USES} times.";
         }
     }
 }
