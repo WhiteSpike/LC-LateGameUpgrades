@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades
 {
-    internal class Stimpack : GameAttributeTierUpgrade, IUpgradeWorldBuilding
+    internal class Stimpack : GameAttributeTierUpgrade, IUpgradeWorldBuilding, IPlayerSync
     {
         public const string UPGRADE_NAME = "Stimpack";
         internal const string WORLD_BUILDING_TEXT = "\n\nAn experimental Company-offered 'health treatment' program advertised only on old, peeling Ship posters," +
@@ -39,27 +39,19 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades
             logger = new LGULogger(UPGRADE_NAME);
             base.Start();
             changingAttribute = GameAttribute.PLAYER_HEALTH;
-            initialValue = UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK;
-            incrementalValue = UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT;
+            initialValue = UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK.Value;
+            incrementalValue = UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT.Value;
         }
 
         public override void Increment()
         {
             base.Increment();
-            UpgradeBus.instance.playerHealthLevel++;
             PlayerControllerB player = UpgradeBus.instance.GetLocalPlayer();
-            LGUStore.instance.PlayerHealthUpdateLevelServerRpc(player.playerSteamId, UpgradeBus.instance.playerHealthLevel);
-        }
-
-        public override void Load()
-        {
-            LoadUpgradeAttribute(ref UpgradeBus.instance.playerHealth, UpgradeBus.instance.playerHealthLevel);
-            base.Load();
+            LGUStore.instance.PlayerHealthUpdateLevelServerRpc(player.playerSteamId, GetUpgradeLevel(UPGRADE_NAME));
         }
 
         public override void Unwind()
         {
-            UnloadUpgradeAttribute(ref UpgradeBus.instance.playerHealth, ref UpgradeBus.instance.playerHealthLevel);
             base.Unwind();
             PlayerControllerB player = UpgradeBus.instance.GetLocalPlayer();
             LGUStore.instance.PlayerHealthUpdateLevelServerRpc(player.playerSteamId, -1);
@@ -70,7 +62,7 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades
             if (!UpgradeBus.instance.playerHealthLevels.ContainsKey(player.playerSteamId)) return health;
             int currentLevel = UpgradeBus.instance.playerHealthLevels[player.playerSteamId];
 
-            return health + UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK + currentLevel * UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT;
+            return health + UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK.Value + currentLevel * UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT.Value;
         }
         /// <summary>
         /// Returns the maximum health possible for the player with given steam identifier
@@ -83,7 +75,7 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades
         public static int GetHealthFromPlayer(int health, ulong steamId)
         {
             int currentLevel = UpgradeBus.instance.playerHealthLevels[steamId];
-            return health + UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK + currentLevel * UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT;
+            return health + UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK.Value + currentLevel * UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT.Value;
         }
         public string GetWorldBuildingText(bool shareStatus = false)
         {
@@ -92,7 +84,7 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades
 
         public override string GetDisplayInfo(int initialPrice = -1, int maxLevels = -1, int[] incrementalPrices = null)
         {
-            Func<int, float> infoFunction = level => UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK + level * UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT;
+            Func<int, float> infoFunction = level => UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_UNLOCK.Value + level * UpgradeBus.instance.cfg.PLAYER_HEALTH_ADDITIONAL_HEALTH_INCREMENT.Value;
             string infoFormat = AssetBundleHandler.GetInfoFromJSON(UPGRADE_NAME);
             return Tools.GenerateInfoForUpgrade(infoFormat, initialPrice, incrementalPrices, infoFunction);
         }

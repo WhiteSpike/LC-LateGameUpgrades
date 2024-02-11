@@ -11,51 +11,33 @@ namespace MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades
         public static FastEncryption instance;
         private static LGULogger logger;
 
+        const float TRANSMIT_MULTIPLIER = 0.2f;
         internal override void Start()
         {
             upgradeName = UPGRADE_NAME;
             logger = new LGULogger(upgradeName);
             base.Start();
         }
-
         public override void Load()
         {
             base.Load();
-
-            UpgradeBus.instance.pager = true;
             instance = this;
         }
 
-        public override void Unwind()
+        public static int GetLimitOfCharactersTransmit(int defaultLimit, string message)
         {
-            base.Unwind();
-            UpgradeBus.instance.pager = false;
+            if (!GetActiveUpgrade(UPGRADE_NAME)) return defaultLimit;
+            return message.Length;
         }
-
-        [ServerRpc(RequireOwnership = false)]
-        public void ReqBroadcastChatServerRpc(string msg)
+        public static float GetMultiplierOnSignalTextTimer(float defaultMultiplier)
         {
-            logger.LogInfo($"Instructing clients to print broadcasted message...");
-            ReceiveChatClientRpc(msg);
-        }
-
-        [ClientRpc]
-        public void ReceiveChatClientRpc(string msg)
-        {
-            SignalTranslator translator = FindObjectOfType<SignalTranslator>();
-            if (translator != null)
-            {
-                HUDManager.Instance.UIAudio.PlayOneShot(translator.startTransmissionSFX);
-                logger.LogError("Unable to find SignalTranslator!");
-            }
-            logger.LogInfo("Broadcasted messaged received, printing.");
-            HUDManager.Instance.chatText.text += $"\n<color=#FF0000>Terminal</color><color=#0000FF>:</color> <color=#FF00FF>{msg}</color>";
-            HUDManager.Instance.PingHUDElement(HUDManager.Instance.Chat, 4f, 1f, 0.2f);
+            if (!GetActiveUpgrade(UPGRADE_NAME)) return defaultMultiplier;
+            return defaultMultiplier* TRANSMIT_MULTIPLIER;
         }
 
         public override string GetDisplayInfo(int price = -1)
         {
-            return "Unrestrict the transmitter";
+            return $"${price} - The transmitter will write the letters faster and the restriction of characters will be lifted.";
         }
     }
 }

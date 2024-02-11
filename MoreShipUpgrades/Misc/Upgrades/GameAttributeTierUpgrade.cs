@@ -72,6 +72,10 @@ namespace MoreShipUpgrades.Misc.Upgrades
             /// Affects the total amount of time the ship's doors can hold shut
             /// </summary>
             SHIP_DOOR_BATTERY,
+            /// <summary>
+            /// Affects the global time speed multiplier used to change the time in a moon
+            /// </summary>
+            TIME_GLOBAL_TIME_MULTIPLIER,
         }
         PlayerControllerB GetLocalPlayer()
         {
@@ -91,12 +95,12 @@ namespace MoreShipUpgrades.Misc.Upgrades
         /// </summary>
         /// <param name="upgradeActive">Represents the state of the upgrade being applied on the player</param>
         /// <param name="upgradeLevel">Current level of the upgrade when loading the upgrade</param>
-        protected void LoadUpgradeAttribute(ref bool upgradeActive, int upgradeLevel = 0)
+        protected void LoadUpgradeAttribute()
         {
             if (!activeUpgrade) AddInitialValue();
-            upgradeActive = true;
             activeUpgrade = true;
 
+            int upgradeLevel = GetUpgradeLevel(upgradeName);
             AddPossibleIncrementalValues(upgradeLevel);
             currentUpgradeLevel = upgradeLevel;
         }
@@ -116,6 +120,7 @@ namespace MoreShipUpgrades.Misc.Upgrades
                 case GameAttribute.PLAYER_SPRINT_TIME: localPlayer.sprintTime += initialValue; break;
                 case GameAttribute.PLAYER_JUMP_FORCE: localPlayer.jumpForce += initialValue; break;
                 case GameAttribute.SHIP_DOOR_BATTERY: doorControls.doorPowerDuration += initialValue; break;
+                case GameAttribute.TIME_GLOBAL_TIME_MULTIPLIER: TimeOfDay.Instance.globalTimeSpeedMultiplier -= initialValue; break;
                 default: logger.LogError("No attribute was set for this upgrade to add the initial value"); break;
             }
            
@@ -136,6 +141,7 @@ namespace MoreShipUpgrades.Misc.Upgrades
                 case GameAttribute.PLAYER_SPRINT_TIME: localPlayer.sprintTime += incrementalValue; break;
                 case GameAttribute.PLAYER_JUMP_FORCE: localPlayer.jumpForce += incrementalValue; break;
                 case GameAttribute.SHIP_DOOR_BATTERY: doorControls.doorPowerDuration += incrementalValue; break;
+                case GameAttribute.TIME_GLOBAL_TIME_MULTIPLIER: TimeOfDay.Instance.globalTimeSpeedMultiplier -= incrementalValue; break;
                 default: logger.LogError("No attribute was set for this upgrade to add the incremental value"); break;
             }
         }
@@ -162,6 +168,7 @@ namespace MoreShipUpgrades.Misc.Upgrades
                 case GameAttribute.PLAYER_SPRINT_TIME: localPlayer.sprintTime += amountToIncrement; break;
                 case GameAttribute.PLAYER_JUMP_FORCE: localPlayer.jumpForce += amountToIncrement; break;
                 case GameAttribute.SHIP_DOOR_BATTERY: doorControls.doorPowerDuration += amountToIncrement; break;
+                case GameAttribute.TIME_GLOBAL_TIME_MULTIPLIER: TimeOfDay.Instance.globalTimeSpeedMultiplier -= amountToIncrement; break;
                 default: logger.LogError("No attribute was set for this upgrade to add the incremental values"); break;
             }
         }
@@ -171,14 +178,14 @@ namespace MoreShipUpgrades.Misc.Upgrades
         /// </summary>
         /// <param name="upgradeActive">Current status of the upgrade</param>
         /// <param name="upgradeLevel">Current level of the upgrade</param>
-        internal void UnloadUpgradeAttribute(ref bool upgradeActive, ref int upgradeLevel)
+        internal void UnloadUpgradeAttribute()
         {
+            bool upgradeActive = GetActiveUpgrade(upgradeName);
+            int upgradeLevel = GetUpgradeLevel(upgradeName);
             if (upgradeActive) RemoveInitialValue();
             RemovePossibleIncrementalValues(upgradeLevel);
-            upgradeActive = false;
-            upgradeLevel = 0;
-            activeUpgrade = upgradeActive;
-            currentUpgradeLevel = upgradeLevel;
+            activeUpgrade = false;
+            currentUpgradeLevel = 0;
         }
         /// <summary>
         /// Removes the initial value introduced into the selected attribute
@@ -195,6 +202,7 @@ namespace MoreShipUpgrades.Misc.Upgrades
                 case GameAttribute.PLAYER_SPRINT_TIME: localPlayer.sprintTime -= initialValue; break;
                 case GameAttribute.PLAYER_JUMP_FORCE: localPlayer.jumpForce -= initialValue; break;
                 case GameAttribute.SHIP_DOOR_BATTERY: doorControls.doorPowerDuration -= initialValue; break;
+                case GameAttribute.TIME_GLOBAL_TIME_MULTIPLIER: TimeOfDay.Instance.globalTimeSpeedMultiplier += initialValue; break;
                 default: logger.LogError("No attribute was set for this upgrade to remove the initial value"); break;
             }
         }
@@ -218,6 +226,7 @@ namespace MoreShipUpgrades.Misc.Upgrades
                 case GameAttribute.PLAYER_SPRINT_TIME: localPlayer.sprintTime -= amountToIncrement; break;
                 case GameAttribute.PLAYER_JUMP_FORCE: localPlayer.jumpForce -= amountToIncrement; break;
                 case GameAttribute.SHIP_DOOR_BATTERY: doorControls.doorPowerDuration -= amountToIncrement; break;
+                case GameAttribute.TIME_GLOBAL_TIME_MULTIPLIER: TimeOfDay.Instance.globalTimeSpeedMultiplier += amountToIncrement; break;
                 default: logger.LogError("No attribute was set for this upgrade to remove the incremental values"); break;
             }
         }
@@ -225,8 +234,19 @@ namespace MoreShipUpgrades.Misc.Upgrades
         #region Overriden Methods
         public override void Increment()
         {
+            base.Increment();
             AddIncrementalValue();
             currentUpgradeLevel++;
+        }
+        public override void Load()
+        {
+            LoadUpgradeAttribute();
+            base.Load();
+        }
+        public override void Unwind()
+        {
+            UnloadUpgradeAttribute();
+            base.Unwind();
         }
         #endregion
     }
