@@ -121,7 +121,7 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<bool> ADV_KEEP_ITEMS_ON_TELE { get; set; }
         public ConfigEntry<float> CHANCE_TO_BREAK { get; set; }
         public ConfigEntry<float> BEEKEEPER_DAMAGE_MULTIPLIER { get; set; }
-        public ConfigEntry<float> BEEKEEPER_DAMAGE_MULTIPLIER_INCREMENT { get; set; }s
+        public ConfigEntry<float> BEEKEEPER_DAMAGE_MULTIPLIER_INCREMENT { get; set; }
         public ConfigEntry<float> DISCOMBOBULATOR_RADIUS { get; set; }
         public ConfigEntry<float> DISCOMBOBULATOR_STUN_DURATION { get; set; }
         public ConfigEntry<bool> DISCOMBOBULATOR_NOTIFY_CHAT { get; set; }

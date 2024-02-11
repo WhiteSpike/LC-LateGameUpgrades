@@ -286,12 +286,12 @@ namespace MoreShipUpgrades.Managers
             }
             else if (ItemsToSync["Wheel"].creditsWorth != cfg.WHEELBARROW_PRICE.Value) Items.UpdateShopItemPrice(ItemsToSync["Wheel"], cfg.WHEELBARROW_PRICE.Value);
 
-            if (!cfg.BARBED_WIRE_ENABLED)
+            if (!cfg.BARBED_WIRE_ENABLED.Value)
             {
                 logger.LogInfo("Removing Barbed Wire from store.");
                 Items.RemoveShopItem(ItemsToSync["Barbed Wire"]);
             }
-            else if (ItemsToSync["Barbed Wire"].creditsWorth != cfg.BARBED_WIRE_PRICE) Items.UpdateShopItemPrice(ItemsToSync["Barbed Wire"], cfg.BARBED_WIRE_PRICE);
+            else if (ItemsToSync["Barbed Wire"].creditsWorth != cfg.BARBED_WIRE_PRICE.Value) Items.UpdateShopItemPrice(ItemsToSync["Barbed Wire"], cfg.BARBED_WIRE_PRICE.Value);
         }
 
         void SyncAvailableContracts()

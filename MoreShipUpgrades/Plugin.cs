@@ -654,13 +654,13 @@ namespace MoreShipUpgrades
             barbedWire.isScrap = false;
             barbedWire.allowDroppingAheadOfPlayer = true;
             barbedWire.canBeGrabbedBeforeGameStart = false;
-            barbedWire.creditsWorth = cfg.BARBED_WIRE_PRICE;
+            barbedWire.creditsWorth = cfg.BARBED_WIRE_PRICE.Value;
             barbedWire.isConductiveMetal = true;
             barbedWire.itemId = 492020;
             barbedWire.itemName = "Barbed Wire";
             barbedWire.itemSpawnsOnGround = true;
             barbedWire.saveItemVariable = true;
-            barbedWire.weight = 0.99f + (cfg.BARBED_WIRE_WEIGHT / 100f);
+            barbedWire.weight = 0.99f + (cfg.BARBED_WIRE_WEIGHT.Value / 100f);
             BarbedWire barbedWireScript = barbedWire.spawnPrefab.AddComponent<BarbedWire>();
             barbedWireScript.itemProperties = barbedWire;
             LethalLib.Modules.NetworkPrefabs.RegisterNetworkPrefab(barbedWire.spawnPrefab);
@@ -668,20 +668,7 @@ namespace MoreShipUpgrades
 
             UpgradeBus.instance.ItemsToSync.Add("Barbed Wire", barbedWire);
 
-            TerminalNode barbedWireNode = ScriptableObject.CreateInstance<TerminalNode>();
-            string slowDownEnemies = $"slow down by {(1f - cfg.BARBED_WIRE_SLOW_MULTIPLIER)/100f}%";
-            string damageEnemies = $"damage equivalent to {cfg.BARBED_WIRE_DAMAGE_AMOUNT} force";
-            string stunEnemies = $"stun for {cfg.BARBED_WIRE_STUN_TIME} seconds";
-            string slowdownPlayers = $"slow down by {(1f - cfg.BARBED_WIRE_SLOW_PLAYER_MULTIPLIER) / 100f}%";
-            string damagePlayers = $"deal {cfg.BARBED_WIRE_DAMAGE_PLAYER_AMOUNT} damage";
-            barbedWireNode.displayText = $"A kit of barbed wire which can {(cfg.BARBED_WIRE_SLOW_ENEMIES ? $"{slowDownEnemies}" : "")}" +
-                                        $"{(cfg.BARBED_WIRE_DAMAGE_ENEMIES ? cfg.BARBED_WIRE_SLOW_ENEMIES ? !cfg.BARBED_WIRE_STUN_ENEMIES ? $"and {damageEnemies}" : $", {damageEnemies}" : $"{damageEnemies}" : "")}" +
-                                        $"{(cfg.BARBED_WIRE_STUN_ENEMIES ? cfg.BARBED_WIRE_DAMAGE_ENEMIES || cfg.BARBED_WIRE_SLOW_ENEMIES ? $"and {stunEnemies}" : $"{stunEnemies}" : "")}" +
-                                        $"{(cfg.BARBED_WIRE_SLOW_ENEMIES || cfg.BARBED_WIRE_DAMAGE_ENEMIES || cfg.BARBED_WIRE_STUN_ENEMIES ? "enemies" : "")}" +
-                                        $"{(cfg.BARBED_WIRE_SLOW_PLAYERS || cfg.BARBED_WIRE_DAMAGE_PLAYERS ? "but also " : "")}" +
-                                        $"{(cfg.BARBED_WIRE_SLOW_PLAYERS ? $" {slowdownPlayers}" : "")}" +
-                                        $"{(cfg.BARBED_WIRE_DAMAGE_PLAYERS ? cfg.BARBED_WIRE_SLOW_PLAYERS ? $" and {damagePlayers}" : $"{damagePlayers}" : "")}" +
-                                        $"{(!cfg.BARBED_WIRE_SLOW_ENEMIES && !cfg.BARBED_WIRE_DAMAGE_ENEMIES && !cfg.BARBED_WIRE_STUN_ENEMIES && !cfg.BARBED_WIRE_SLOW_PLAYERS && !cfg.BARBED_WIRE_DAMAGE_PLAYERS ? " do nothing." : ".")}";
+            TerminalNode barbedWireNode = SetupInfoNode(barbedWire);
             LethalLib.Modules.Items.RegisterShopItem(barbedWire, null, null, barbedWireNode, barbedWire.creditsWorth);
         }
         private void SetupPerks()
