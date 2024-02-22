@@ -1,8 +1,5 @@
 ﻿using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc.Upgrades;
-using MoreShipUpgrades.UpgradeComponents.Interfaces;
-using System;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,14 +7,19 @@ namespace MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades
 {
     class WalkieGPS : OneTimeUpgrade
     {
-        public static string UPGRADE_NAME = "Walkie GPS";
+        public const string UPGRADE_NAME = "Walkie GPS";
         public static WalkieGPS instance;
+        bool walkieUIActive;
 
         private GameObject canvas;
         private Text x, y, z, time;
-        internal override void Start()
+        void Awake()
         {
             upgradeName = UPGRADE_NAME;
+            instance = this;
+        }
+        internal override void Start()
+        {
             base.Start();
             canvas = transform.GetChild(0).gameObject;
             x = canvas.transform.GetChild(0).GetComponent<Text>();
@@ -25,16 +27,9 @@ namespace MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades
             z = canvas.transform.GetChild(2).GetComponent<Text>();
             time = canvas.transform.GetChild(3).GetComponent<Text>();
         }
-
-        public override void Load()
-        {
-            base.Load();
-            instance = this;
-        }
-
         public void Update()
         {
-            if (!UpgradeBus.instance.walkieUIActive) return;
+            if (!walkieUIActive) return;
 
             Vector3 pos = GameNetworkManager.Instance.localPlayerController.transform.position;
             x.text = $"X: {pos.x.ToString("F1")}";
@@ -42,7 +37,7 @@ namespace MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades
             z.text = $"Z: {pos.z.ToString("F1")}";
 
             int num = (int)(TimeOfDay.Instance.normalizedTimeOfDay * (60f * TimeOfDay.Instance.numberOfHours)) + 360;
-            int num2 = (int)Mathf.Floor(num / 60);
+            int num2 = (int)Mathf.Floor(num / 60f);
             string amPM = "AM";
             string text = "";
             if (num2 >= 24)
@@ -66,13 +61,13 @@ namespace MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades
         {
             if (canvas.activeInHierarchy) return;
 
-            UpgradeBus.instance.walkieUIActive = true;
+            walkieUIActive = true;
             canvas.SetActive(true);
         }
 
         public void WalkieDeactivate()
         {
-            UpgradeBus.instance.walkieUIActive = false;
+            walkieUIActive = false;
             canvas.SetActive(false);
         }
 

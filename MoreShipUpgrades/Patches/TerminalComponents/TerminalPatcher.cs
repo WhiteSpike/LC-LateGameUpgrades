@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using MoreShipUpgrades.Managers;
 using MoreShipUpgrades.Misc;
 using MoreShipUpgrades.Misc.TerminalNodes;
 using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades;
@@ -11,10 +10,8 @@ using System.Reflection.Emit;
 namespace MoreShipUpgrades.Patches.TerminalComponents
 {
     [HarmonyPatch(typeof(Terminal))]
-    internal class TerminalPatcher
+    internal static class TerminalPatcher
     {
-        private static LGULogger logger = new LGULogger(nameof(TerminalPatcher));
-
         [HarmonyPostfix]
         [HarmonyPatch(nameof(Terminal.Start))]
         static void StartPostfix()
@@ -38,10 +35,16 @@ namespace MoreShipUpgrades.Patches.TerminalComponents
             MethodInfo guaranteedMinimumSale = typeof(MarketInfluence).GetMethod(nameof(MarketInfluence.GetGuaranteedPercentageSale));
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             int index = 0;
-            Tools.FindInteger(ref index, ref codes, -10, addCode: lethalDealsGuaranteedItems, errorMessage: "Couldn't find negative value representing no sales");
-            Tools.FindInteger(ref index, ref codes, 5, addCode: bargainConnectionsAmount, errorMessage: "Couldn't find first maximum amount of items to go on sale");
-            Tools.FindInteger(ref index, ref codes, 5, addCode: bargainConnectionsAmount, errorMessage: "Couldn't find second maximum amount of items to go on sale");
-            Tools.FindInteger(ref index, ref codes, 0, addCode: guaranteedMinimumSale, errorMessage: "Couldn't find minimum sale percentage");
+            index = Tools.FindInteger(index, ref codes, -10, addCode: lethalDealsGuaranteedItems, errorMessage: "Couldn't find negative value representing no sales");
+            index = Tools.FindInteger(index, ref codes, 5, addCode: bargainConnectionsAmount, errorMessage: "Couldn't find first maximum amount of items to go on sale");
+            index = Tools.FindInteger(index, ref codes, 5, addCode: bargainConnectionsAmount, errorMessage: "Couldn't find second maximum amount of items to go on sale");
+            index = Tools.FindInteger(index, ref codes, findValue: 0, skip: true);
+            index = Tools.FindInteger(index, ref codes, findValue: 0, skip: true);
+            index = Tools.FindInteger(index, ref codes, findValue: 0, skip: true);
+            index = Tools.FindInteger(index, ref codes, findValue: 0, skip: true);
+            index = Tools.FindInteger(index, ref codes, findValue: 0, skip: true);
+            index = Tools.FindInteger(index, ref codes, findValue: 0, skip: true);
+            index = Tools.FindInteger(index, ref codes, 0, addCode: guaranteedMinimumSale, errorMessage: "Couldn't find minimum sale percentage");
             codes.Insert(index, new CodeInstruction(OpCodes.Ldloc_S, 4));
             return codes;
         }

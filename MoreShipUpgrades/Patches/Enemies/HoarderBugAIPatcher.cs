@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(HoarderBugAI))]
-    internal class HoarderBugAIPatcher
+    internal static class HoarderBugAIPatcher
     {
         static LGULogger logger = new LGULogger(nameof(HoarderBugAIPatcher));
         const float PATROL_SPEED = 6f;
@@ -47,9 +47,9 @@ namespace MoreShipUpgrades.Patches.Enemies
         [HarmonyPatch(nameof(HoarderBugAI.IsHoarderBugAngry))]
         private static void MakeHoarderBugSwarmAngry(ref bool __result)
         {
-            if (UpgradeBus.instance.contractType != "exterminator") return;
+            if (ContractManager.Instance.contractType != "exterminator") return;
 
-            if (UpgradeBus.instance.contractLevel == RoundManager.Instance.currentLevel.PlanetName)
+            if (ContractManager.Instance.contractLevel == RoundManager.Instance.currentLevel.PlanetName)
             {
                 __result = true;
             }

@@ -12,18 +12,18 @@ using MoreShipUpgrades.UpgradeComponents.Items.BarbedWire;
 namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(SpringManAI))]
-    internal class SpringManAIPatcher
+    internal static class SpringManAIPatcher
     {
-        private static LGULogger logger = new LGULogger(nameof(SpringManAIPatcher));
+        private static LguLogger logger = new LguLogger(nameof(SpringManAIPatcher));
         [HarmonyPrefix]
         [HarmonyPatch(nameof(SpringManAI.DoAIInterval))]
-        private static void DoAllIntervalPrefix(ref SpringManAI __instance)
+        static void DoAllIntervalPrefix(ref SpringManAI __instance)
         {
             if (Peeper.HasLineOfSightToPeepers(__instance)) __instance.currentBehaviourStateIndex = 1;
         }
         [HarmonyTranspiler]
         [HarmonyPatch(nameof(SpringManAI.Update))]
-        private static IEnumerable<CodeInstruction> Update_Transpiler(IEnumerable<CodeInstruction> instructions)
+        static IEnumerable<CodeInstruction> Update_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo checkForBarbedWire = typeof(BaseBarbedWire).GetMethod(nameof(BaseBarbedWire.CheckForBarbedWires));
             FieldInfo currentChaseSpeed = typeof(SpringManAI).GetField(nameof(SpringManAI.currentChaseSpeed), BindingFlags.NonPublic | BindingFlags.Instance);

@@ -11,7 +11,7 @@ using System.Text;
 namespace MoreShipUpgrades.Patches.Enemies
 {
     [HarmonyPatch(typeof(BaboonBirdAI))]
-    internal class BaboonBirdAIPatcher
+    internal static class BaboonBirdAIPatcher
     {
         private static LGULogger logger = new LGULogger(nameof(BaboonBirdAIPatcher));
         const float PATROL_SPEED = 10f;
@@ -68,7 +68,7 @@ namespace MoreShipUpgrades.Patches.Enemies
             for (; index < codes.Count; index++)
             {
                 if (!(codes[index].opcode == OpCodes.Ldloc_S && codes[index].operand.ToString() == "GrabbableObject (18)")) continue;
-                if (!(codes[index + 1].opcode == OpCodes.Ldnull)) continue;
+                if (codes[index + 1].opcode != OpCodes.Ldnull) continue;
                 codes.Insert(index + 3, new CodeInstruction(OpCodes.And));
                 codes.Insert(index + 3, new CodeInstruction(OpCodes.Not));
                 codes.Insert(index + 3, new CodeInstruction(OpCodes.Call, checkIfInWheelbarrow));

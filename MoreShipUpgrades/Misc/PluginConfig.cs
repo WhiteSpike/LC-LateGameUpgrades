@@ -7,16 +7,54 @@ using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
 using MoreShipUpgrades.UpgradeComponents.Commands;
 using MoreShipUpgrades.Misc.Upgrades;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
+using System.Reflection;
+using MoreShipUpgrades.Managers;
 
 
 namespace MoreShipUpgrades.Misc
 {
     [Serializable]
+    class ConfigSynchronization
+    {
+        public ConfigSynchronization() { }
+        internal void SetupSynchronization()
+        {
+            booleanProperties = new Dictionary<string, bool>();
+            integerProperties = new Dictionary<string, int>();
+            floatProperties = new Dictionary<string, float>();
+            stringProperties = new Dictionary<string, string>();
+            PropertyInfo[] propertyInfos = typeof(PluginConfig).GetProperties();
+            foreach (PropertyInfo info in propertyInfos)
+            {
+                if (info.PropertyType == typeof(ConfigEntry<bool>)) booleanProperties[info.Name] = ((ConfigEntry<bool>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value;
+                if (info.PropertyType == typeof(ConfigEntry<int>)) integerProperties[info.Name] = ((ConfigEntry<int>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value;
+                if (info.PropertyType == typeof(ConfigEntry<float>)) floatProperties[info.Name] = ((ConfigEntry<float>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value;
+                if (info.PropertyType == typeof(ConfigEntry<string>)) stringProperties[info.Name] = ((ConfigEntry<string>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value;
+            }
+        }
+        internal void SynchronizeConfiguration()
+        {
+            PropertyInfo[] propertyInfos = typeof(PluginConfig).GetProperties();
+            foreach (PropertyInfo info in propertyInfos)
+            {
+                if (info.PropertyType == typeof(ConfigEntry<bool>)) ((ConfigEntry<bool>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value = booleanProperties[info.Name];
+                if (info.PropertyType == typeof(ConfigEntry<int>)) ((ConfigEntry<int>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value = integerProperties[info.Name];
+                if (info.PropertyType == typeof(ConfigEntry<float>)) ((ConfigEntry<float>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value = floatProperties[info.Name];
+                if (info.PropertyType == typeof(ConfigEntry<string>)) ((ConfigEntry<string>)info.GetValue(UpgradeBus.Instance.PluginConfiguration)).Value = stringProperties[info.Name];
+            }
+                
+        }
+        public Dictionary<string, bool> booleanProperties;
+        public Dictionary<string, int> integerProperties;
+        public Dictionary<string, float> floatProperties;
+        public Dictionary<string, string> stringProperties;
+    }
     public class PluginConfig
     {
         readonly ConfigFile configFile;
 
         // enabled disabled
+
         public ConfigEntry<bool> MARKET_INFLUENCE_ENABLED { get; set; }
         public ConfigEntry<bool> BARGAIN_CONNECTIONS_ENABLED { get; set; }
         public ConfigEntry<bool> LETHAL_DEALS_ENABLED { get; set; }
@@ -28,7 +66,6 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<bool> PROTEIN_ENABLED { get; set; }
         public ConfigEntry<bool> BIGGER_LUNGS_ENABLED { get; set; }
         public ConfigEntry<bool> BACK_MUSCLES_ENABLED { get; set; }
-        public ConfigEntry<bool> LIGHT_FOOTED_ENABLED { get; set; }
         public ConfigEntry<bool> NIGHT_VISION_ENABLED { get; set; }
         public ConfigEntry<bool> RUNNING_SHOES_ENABLED { get; set; }
         public ConfigEntry<bool> BETTER_SCANNER_ENABLED { get; set; }
@@ -47,15 +84,11 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<bool> BARBED_WIRE_ENABLED { get; set; }
 
         // individual or shared
-        public ConfigEntry<bool> ADVANCED_TELE_INDIVIDUAL { get; set; }
-        public ConfigEntry<bool> WEAK_TELE_INDIVIDUAL { get; set; }
         public ConfigEntry<bool> BEEKEEPER_INDIVIDUAL { get; set; }
         public ConfigEntry<bool> PROTEIN_INDIVIDUAL { get; set; }
         public ConfigEntry<bool> BIGGER_LUNGS_INDIVIDUAL { get; set; }
         public ConfigEntry<bool> BACK_MUSCLES_INDIVIDUAL { get; set; }
-        public ConfigEntry<bool> LIGHT_FOOTED_INDIVIDUAL { get; set; }
         public ConfigEntry<bool> NIGHT_VISION_INDIVIDUAL { get; set; }
-        public ConfigEntry<bool> HUNTER_INDIVIDUAL { get; set; }
         public ConfigEntry<bool> PLAYER_HEALTH_INDIVIDUAL { get; set; }
 
         public ConfigEntry<bool> RUNNING_SHOES_INDIVIDUAL { get; set; }
@@ -82,7 +115,6 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<int> PROTEIN_PRICE { get; set; }
         public ConfigEntry<int> BIGGER_LUNGS_PRICE { get; set; }
         public ConfigEntry<int> BACK_MUSCLES_PRICE { get; set; }
-        public ConfigEntry<int> LIGHT_FOOTED_PRICE { get; set; }
         public ConfigEntry<int> NIGHT_VISION_PRICE { get; set; }
         public ConfigEntry<int> RUNNING_SHOES_PRICE { get; set; }
         public ConfigEntry<int> BETTER_SCANNER_PRICE { get; set; }
@@ -111,7 +143,6 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<bool> DESTROY_TRAP { get; set; }
         public ConfigEntry<float> DISARM_TIME { get; set; }
         public ConfigEntry<bool> EXPLODE_TRAP { get; set; }
-        public ConfigEntry<bool> REQUIRE_LINE_OF_SIGHT { get; set; }
         public ConfigEntry<float> CARRY_WEIGHT_REDUCTION { get; set; }
         public ConfigEntry<float> NODE_DISTANCE_INCREASE { get; set; }
         public ConfigEntry<float> SHIP_AND_ENTRANCE_DISTANCE_INCREASE { get; set; }
@@ -125,7 +156,6 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<float> DISCOMBOBULATOR_RADIUS { get; set; }
         public ConfigEntry<float> DISCOMBOBULATOR_STUN_DURATION { get; set; }
         public ConfigEntry<bool> DISCOMBOBULATOR_NOTIFY_CHAT { get; set; }
-        [JsonIgnore]
         public ConfigEntry<UnityEngine.Color> NIGHT_VIS_COLOR { get; set; }
         public ConfigEntry<float> NIGHT_VIS_DRAIN_SPEED { get; set; }
         public ConfigEntry<float> NIGHT_VIS_REGEN_SPEED { get; set; }
@@ -156,7 +186,6 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<float> BEEKEEPER_HIVE_VALUE_INCREASE { get; set; }
         public ConfigEntry<string> BACK_MUSCLES_UPGRADE_PRICES { get; set; }
         public ConfigEntry<string> BIGGER_LUNGS_UPGRADE_PRICES { get; set; }
-        public ConfigEntry<string> LIGHT_FOOTED_UPGRADE_PRICES { get; set; }
         public ConfigEntry<string> NIGHT_VISION_UPGRADE_PRICES { get; set; }
         public ConfigEntry<string> RUNNING_SHOES_UPGRADE_PRICES { get; set; }
         public ConfigEntry<string> STRONG_LEGS_UPGRADE_PRICES { get; set; }
@@ -283,9 +312,10 @@ namespace MoreShipUpgrades.Misc
         public ConfigEntry<int> BARGAIN_CONNECTIONS_INCREMENTAL_ITEM_AMOUNT { get; set; }
         public ConfigEntry<string> BARGAIN_CONNECTIONS_PRICES { get; set; }
 
-        public PluginConfig(ConfigFile cfg)
+
+        public PluginConfig(ConfigFile PluginConfiguration)
         {
-            configFile = cfg;
+            configFile = PluginConfiguration;
         }
 
         private ConfigEntry<T> ConfigEntry<T>(string section, string key, T defaultVal, string description = "")
@@ -426,7 +456,7 @@ namespace MoreShipUpgrades.Misc
             NIGHT_VIS_INTENSITY_INCREMENT = ConfigEntry(topSection, "Night Vision Intensity Increment", 0f, "Increases your intensity by this value each upgrade.");
             NIGHT_VIS_STARTUP = ConfigEntry(topSection, "Night Vision StartUp Cost", 0.1f, "The percent battery drained when turned on (0.1 = 10%).");
             NIGHT_VIS_EXHAUST = ConfigEntry(topSection, "Night Vision Exhaustion", 2f, "How many seconds night vision stays fully depleted.");
-            TOGGLE_NIGHT_VISION_KEY = ConfigEntry(topSection, "Toggle Night Vision Key", "LeftAlt", "Key to toggle Night Vision, you can use any key on your system such as LeftAlt, LeftShift, or any letter which exists.");
+            TOGGLE_NIGHT_VISION_KEY = ConfigEntry(topSection, "Toggle Night Vision Key", "<Keyboard>/leftAlt", "More info in Unity's Control Path documentation in the new Input System");
             NIGHT_VIS_DRAIN_INCREMENT = ConfigEntry(topSection, "Decrease for night vis battery drain", 0.15f, "Applied to drain speed on each upgrade.");
             NIGHT_VIS_REGEN_INCREMENT = ConfigEntry(topSection, "Increase for night vis battery regen", 0.40f, "Applied to regen speed on each upgrade.");
             NIGHT_VIS_BATTERY_INCREMENT = ConfigEntry(topSection, "Increase for night vis battery life", 2f, "Applied to the max charge for night vis battery on each upgrade.");
@@ -617,7 +647,7 @@ namespace MoreShipUpgrades.Misc
             SCRAP_WHEELBARROW_LOOK_SENSITIVITY_DRAWBACK = ConfigEntry(topSection, "Look sensitivity drawback of the Shopping Cart Item", 0.8f, "Value multiplied on the player's look sensitivity when moving with the Scrap wheelbarrow Item");
             SCRAP_WHEELBARROW_MOVEMENT_SLOPPY = ConfigEntry(topSection, "Sloppiness of the Shopping Cart Item", 2f, "Value multiplied on the player's movement to give the feeling of drifting while carrying the Scrap Wheelbarrow Item");
             SCRAP_WHEELBARROW_PLAY_NOISE = ConfigEntry(topSection, "Plays noises for players with Shopping Cart Item", true, "If false, it will just not play the sounds, it will still attract monsters to noise");
-            WHEELBARROW_DROP_ALL_CONTROL_BIND = ConfigEntry(topSection, "Control bind for drop all items", "Middle", "To know what to insert here, check documentation for UnityEngine.InputSystem.Key and UnityEngine.InputSystem.LowLevel.MouseButton");
+            WHEELBARROW_DROP_ALL_CONTROL_BIND = ConfigEntry(topSection, "Control bind for drop all items", "<Mouse>/middleButton", "More info in Unity's Control Path documentation in the new Input System");
         }
     }
 }
