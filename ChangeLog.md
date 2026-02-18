@@ -2,6 +2,7 @@
 <summary> 3.12.13 - 2026-??-?? </summary>
 
 - Fixed Smarter Lockpicker upgrade description being incorrect.
+- Fixed Better Scanner displaying items through items at the first level instead of last.
 
 </details>
 
