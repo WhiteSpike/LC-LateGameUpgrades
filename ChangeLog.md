@@ -3,6 +3,7 @@
 
 - Fixed Smarter Lockpicker upgrade description being incorrect.
 - Fixed Better Scanner displaying items through items at the first level instead of last.
+- Recompiled against newest release of DawnLib due to changes with CurveTableBuilder.
 
 </details>
 
