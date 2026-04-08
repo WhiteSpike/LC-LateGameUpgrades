@@ -90,5 +90,12 @@ namespace MoreShipUpgrades.Extensions
             if (player.IsTeleporting()) return Mathf.Clamp(defaultValue + player.GetCurrentWeightFromInventory(),1f,10f);
             return defaultValue;
         }
+
+        public static GrabbableObject RemainItemSlotIfTeleporting(this PlayerControllerB player, int itemSlotIndex)
+        {
+            Plugin.mls.LogDebug(player == null);
+            if (player.IsTeleporting()) return player.ItemSlots[itemSlotIndex];
+            return null;
+        }
     }
 }

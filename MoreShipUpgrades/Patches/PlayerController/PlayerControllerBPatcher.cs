@@ -1,22 +1,23 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using MoreShipUpgrades.Compat;
+using MoreShipUpgrades.Configuration;
+using MoreShipUpgrades.Extensions;
 using MoreShipUpgrades.Managers;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Linq;
-using UnityEngine;
-using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
-using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
 using MoreShipUpgrades.Misc.Upgrades;
 using MoreShipUpgrades.Misc.Util;
-using MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player;
-using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades.Items;
-using MoreShipUpgrades.Compat;
 using MoreShipUpgrades.UpgradeComponents.Commands;
+using MoreShipUpgrades.UpgradeComponents.OneTimeUpgrades.Items;
+using MoreShipUpgrades.UpgradeComponents.TierUpgrades;
+using MoreShipUpgrades.UpgradeComponents.TierUpgrades.AttributeUpgrades;
+using MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player;
 using MoreShipUpgrades.UpgradeComponents.TierUpgrades.Ship;
-using MoreShipUpgrades.Extensions;
-using MoreShipUpgrades.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using UnityEngine;
 
 namespace MoreShipUpgrades.Patches.PlayerController
 {
@@ -391,10 +392,13 @@ namespace MoreShipUpgrades.Patches.PlayerController
 
         [HarmonyPatch(nameof(PlayerControllerB.DropAllHeldItems))]
         [HarmonyTranspiler]
+        [HarmonyDebug]
         static IEnumerable<CodeInstruction> DropAllHeldItemsTranspiler(IEnumerable<CodeInstruction> instructions)
-        {
-            MethodInfo CanHoldItem = typeof(FusionMatter).GetMethod(nameof(FusionMatter.CanHoldItem));
-            MethodInfo RemainIsHoldingObjectIfTeleporting = typeof(PlayerControllerBExtensions).GetMethod(nameof(PlayerControllerBExtensions.RemainIsHoldingObjectIfTeleporting));
+		{
+			MethodInfo CanHoldItem = typeof(FusionMatter).GetMethod(nameof(FusionMatter.CanHoldItem));
+
+			MethodInfo RemainItemSlotIfTeleporting = typeof(PlayerControllerBExtensions).GetMethod(nameof(PlayerControllerBExtensions.RemainItemSlotIfTeleporting));
+			MethodInfo RemainIsHoldingObjectIfTeleporting = typeof(PlayerControllerBExtensions).GetMethod(nameof(PlayerControllerBExtensions.RemainIsHoldingObjectIfTeleporting));
             MethodInfo RemainActivatingItemIfTeleporting = typeof(PlayerControllerBExtensions).GetMethod(nameof(PlayerControllerBExtensions.RemainActivatingItemIfTeleporting));
             MethodInfo RemainTwoHandedIfTeleporting = typeof(PlayerControllerBExtensions).GetMethod(nameof(PlayerControllerBExtensions.RemainTwoHandedIfTeleporting));
             MethodInfo RemainCarryWeightIfTeleporting = typeof(PlayerControllerBExtensions).GetMethod(nameof(PlayerControllerBExtensions.RemainCarryWeightIfTeleporting));
@@ -402,17 +406,42 @@ namespace MoreShipUpgrades.Patches.PlayerController
 
             FieldInfo isHoldingObject = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.isHoldingObject));
             FieldInfo playerBodyAnimator = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.playerBodyAnimator));
+            FieldInfo ItemOnlySlot = typeof(PlayerControllerB).GetField(nameof(PlayerControllerB.ItemOnlySlot));
 
-            List<CodeInstruction> codes = new(instructions);
+
+			List <CodeInstruction> codes = new(instructions);
             int index = 0;
             Tools.FindNull(ref index, ref codes, skip: true);
+			Tools.FindNull(ref index, ref codes, skip: true);
             index++;
-            codes.Insert(index, new CodeInstruction(OpCodes.And));
-            codes.Insert(index, new CodeInstruction(OpCodes.Not));
-            codes.Insert(index, new CodeInstruction(OpCodes.Call, CanHoldItem));
-            codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_0));
+			codes.Insert(index, new CodeInstruction(OpCodes.And));
+			codes.Insert(index, new CodeInstruction(OpCodes.Not));
+			codes.Insert(index, new CodeInstruction(OpCodes.Call, CanHoldItem));
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_0));
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldloc_0));
+
+			Tools.FindArgumentField(ref index, ref codes, argumentIndex: 2, skip: true);
+			Tools.FindArgumentField(ref index, ref codes, argumentIndex: 2, skip: true);
+			codes.Insert(index, new CodeInstruction(OpCodes.Or));
+			codes.Insert(index, new CodeInstruction(OpCodes.Call, CanHoldItem));
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_0));
             codes.Insert(index, new CodeInstruction(OpCodes.Ldloc_0));
-            Tools.FindField(ref index, ref codes, findField: isHoldingObject, addCode: RemainIsHoldingObjectIfTeleporting, andInstruction: true, notInstruction: true, requireInstance: true);
+			Tools.FindNull(ref index, ref codes, addCode: RemainItemSlotIfTeleporting, requireInstance: true);
+            codes.RemoveAt(index - 1);
+            index--;
+			codes.Insert(index+1, new CodeInstruction(OpCodes.Ldloc_1));
+            //Tools.FindNull(ref index, ref codes, skip: true);
+
+			Tools.FindNull(ref index, ref codes, skip: true);
+			index++;
+			codes.Insert(index, new CodeInstruction(OpCodes.And));
+			codes.Insert(index, new CodeInstruction(OpCodes.Not));
+			codes.Insert(index, new CodeInstruction(OpCodes.Call, CanHoldItem));
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_0));
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldfld, ItemOnlySlot));
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_0));
+
+			Tools.FindField(ref index, ref codes, findField: isHoldingObject, addCode: RemainIsHoldingObjectIfTeleporting, andInstruction: true, notInstruction: true, requireInstance: true);
             Tools.FindField(ref index, ref codes, findField: playerBodyAnimator, skip: true);
             Tools.FindInteger(ref index, ref codes, findValue: 0, addCode: RemainActivatingItemIfTeleporting, orInstruction: true, requireInstance: true);
             Tools.FindInteger(ref index, ref codes, findValue: 0, addCode: RemainTwoHandedIfTeleporting, orInstruction: true, requireInstance: true);

@@ -1,4 +1,11 @@
 <details>
+<summary> 3.13.1 - 2026-04-05 </summary>
+
+- Fixed Fusion Matter not working as expected due to changes to the logic related to dropping items when teleporting from v80 game release.
+
+</details>
+
+<details>
 <summary> 3.13.0 - 2026-04-05 </summary>
 
 - Added code related to LethalLevelLoader's ExtendedLevels as DunGen is no longer included in ``AssemblyCSharp.dll`` but rather its own assembly (``DunGen.dll``).
