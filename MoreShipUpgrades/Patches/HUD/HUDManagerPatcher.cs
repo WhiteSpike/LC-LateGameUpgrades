@@ -17,26 +17,30 @@ namespace MoreShipUpgrades.Patches.HUD
     [HarmonyPatch(typeof(HUDManager))]
     internal static class HudManagerPatcher
     {
-        [HarmonyPostfix]
+        [HarmonyTranspiler]
         [HarmonyPatch(nameof(HUDManager.MeetsScanNodeRequirements))]
-        static void MeetsScanNodeRequirementsPostFix(ScanNodeProperties node, ref bool __result, PlayerControllerB playerScript)
+        static IEnumerable<CodeInstruction> MeetsScanNodeRequirementsTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            if (__result) return;
-            if (!BaseUpgrade.GetActiveUpgrade(BetterScanner.UPGRADE_NAME)) { return; }
-            if (node == null) { __result = false; return; }
-            float rangeIncrease = node.headerText == "Main entrance" || node.headerText == "Ship" ? UpgradeBus.Instance.PluginConfiguration.BetterScannerUpgradeConfiguration.OutsideNodesRangeIncrease.Value : UpgradeBus.Instance.PluginConfiguration.BetterScannerUpgradeConfiguration.NodeRangeIncrease.Value;
-			bool throughWall = Physics.Linecast(playerScript.gameplayCamera.transform.position, node.transform.position, 134217984, QueryTriggerInteraction.Ignore);
-			float num = Vector3.Distance(playerScript.transform.position, node.transform.position);
-            __result = num <= node.maxRange + rangeIncrease && (num >= node.minRange) && (!node.requiresLineOfSight || !throughWall);
-			bool hasRequiredLevel = BaseUpgrade.GetUpgradeLevel(BetterScanner.UPGRADE_NAME) == 2;
-            if (!hasRequiredLevel) return;
-			bool cannotSeeEnemiesThroughWalls = node.nodeType == 1 && !UpgradeBus.Instance.PluginConfiguration.BetterScannerUpgradeConfiguration.SeeEnemiesThroughWalls.Value;
-			if (node.requiresLineOfSight && throughWall && cannotSeeEnemiesThroughWalls)
-			{
-				__result = false;
-			}
+            MethodInfo GetAdditionalRange = typeof(BetterScanner).GetMethod(nameof(BetterScanner.GetAdditionalMaximumScanNodeRange));
+			MethodInfo CanSeeScrapThroughWalls = typeof(BetterScanner).GetMethod(nameof(BetterScanner.CanSeeScrapThroughWall));
+			MethodInfo CanSeeEnemiesThroughWalls = typeof(BetterScanner).GetMethod(nameof(BetterScanner.CanSeeEnemiesThroughWall));
+
+            FieldInfo maxRange = typeof(ScanNodeProperties).GetField(nameof(ScanNodeProperties.maxRange));
+            FieldInfo requireLineOfSight = typeof(ScanNodeProperties).GetField(nameof(ScanNodeProperties.requiresLineOfSight));
+
+            List<CodeInstruction> codes = new(instructions);
+            int index = 0;
+
+            Tools.FindField(ref index, ref codes, findField: maxRange, addCode: GetAdditionalRange, errorMessage: "Couldn't find maximum range of scan node properties");
+            codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_1));
+            Tools.FindField(ref index, ref codes, findField: requireLineOfSight, addCode: CanSeeScrapThroughWalls, andInstruction: true, notInstruction: true, errorMessage: "Couldn't find line of sight requirement of scan node properties");
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldarg_1));
+			Tools.FindFieldReverse(ref index, ref codes, findField: requireLineOfSight, addCode: CanSeeEnemiesThroughWalls, andInstruction: true, notInstruction: true, errorMessage: "Couldn't find line of sight requirement of scan node properties");
+			codes.Insert(index+2, new CodeInstruction(OpCodes.Ldarg_1));
+            return codes;
+
 		}
-        [HarmonyPatch(nameof(HUDManager.UseSignalTranslatorServerRpc))]
+		[HarmonyPatch(nameof(HUDManager.UseSignalTranslatorServerRpc))]
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> UseSignalTranslatorServerRpcTranspiler(IEnumerable<CodeInstruction> instructions)
         {

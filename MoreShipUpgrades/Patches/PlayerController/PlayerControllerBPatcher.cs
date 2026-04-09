@@ -392,7 +392,6 @@ namespace MoreShipUpgrades.Patches.PlayerController
 
         [HarmonyPatch(nameof(PlayerControllerB.DropAllHeldItems))]
         [HarmonyTranspiler]
-        [HarmonyDebug]
         static IEnumerable<CodeInstruction> DropAllHeldItemsTranspiler(IEnumerable<CodeInstruction> instructions)
 		{
 			MethodInfo CanHoldItem = typeof(FusionMatter).GetMethod(nameof(FusionMatter.CanHoldItem));

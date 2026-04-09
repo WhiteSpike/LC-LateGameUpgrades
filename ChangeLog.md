@@ -2,7 +2,9 @@
 <summary> 3.13.1 - 2026-04-05 </summary>
 
 - Fixed Fusion Matter not working as expected due to changes to the logic related to dropping items when teleporting from v80 game release.
-
+- Reworked patch involving scanner nodes and Better Scanner.
+    - Essentialy turned the postfix patch (which would always override whatever vanilla was doing and anything before) into a transpiler patch (modifying the vanilla code to include additional checks from using Better Scanner)
+    
 </details>
 
 <details>
