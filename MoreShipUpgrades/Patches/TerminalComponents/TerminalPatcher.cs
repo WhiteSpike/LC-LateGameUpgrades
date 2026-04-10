@@ -34,7 +34,6 @@ namespace MoreShipUpgrades.Patches.TerminalComponents
 
         [HarmonyTranspiler]
         [HarmonyPatch(nameof(Terminal.SetItemSales))]
-        [HarmonyDebug]
         static IEnumerable<CodeInstruction> SetItemSalesTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo bargainConnectionsAmount = typeof(BargainConnections).GetMethod(nameof(BargainConnections.GetBargainConnectionsAdditionalItems));
