@@ -34,6 +34,7 @@ namespace MoreShipUpgrades.Patches.TerminalComponents
 
         [HarmonyTranspiler]
         [HarmonyPatch(nameof(Terminal.SetItemSales))]
+        [HarmonyDebug]
         static IEnumerable<CodeInstruction> SetItemSalesTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo bargainConnectionsAmount = typeof(BargainConnections).GetMethod(nameof(BargainConnections.GetBargainConnectionsAdditionalItems));
@@ -54,7 +55,9 @@ namespace MoreShipUpgrades.Patches.TerminalComponents
             Tools.FindInteger(ref index, ref codes, findValue: 0, skip: true);
             Tools.FindInteger(ref index, ref codes, 0, addCode: guaranteedMinimumSale, errorMessage: "Couldn't find minimum sale percentage");
             codes.Insert(index, new CodeInstruction(OpCodes.Ldloc_S, 7));
-            return codes;
+			Tools.FindInteger(ref index, ref codes, 0, addCode: guaranteedMinimumSale, errorMessage: "Couldn't find minimum sale percentage");
+			codes.Insert(index, new CodeInstruction(OpCodes.Ldloc_S, 7));
+			return codes;
         }
         [HarmonyTranspiler]
         [HarmonyPatch(nameof(Terminal.ParsePlayerSentence))]

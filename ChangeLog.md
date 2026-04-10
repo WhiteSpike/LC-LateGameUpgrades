@@ -4,7 +4,7 @@
 - Fixed Fusion Matter not working as expected due to changes to the logic related to dropping items when teleporting from v80 game release.
 - Reworked patch involving scanner nodes and Better Scanner.
     - Essentialy turned the postfix patch (which would always override whatever vanilla was doing and anything before) into a transpiler patch (modifying the vanilla code to include additional checks from using Better Scanner)
-    
+- Fixed Market Influence not always working as expected due to a second randomization which picks a value between zero and the value influenced by Market Influence, allowing sale percentages lower than the intended minimum.
 </details>
 
 <details>
