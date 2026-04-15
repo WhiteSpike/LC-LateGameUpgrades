@@ -5,6 +5,7 @@
 - Reworked patch involving scanner nodes and Better Scanner.
     - Essentialy turned the postfix patch (which would always override whatever vanilla was doing and anything before) into a transpiler patch (modifying the vanilla code to include additional checks from using Better Scanner)
 - Fixed Market Influence not always working as expected due to a second randomization which picks a value between zero and the value influenced by Market Influence, allowing sale percentages lower than the intended minimum.
+- Fixed Item Progression modes not working as expected due to code alterations in the selling desk from The Company (mainly, the additional check for an item that isn't considered scrap but has some scrap value)
 </details>
 
 <details>
