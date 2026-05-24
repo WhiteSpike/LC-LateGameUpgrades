@@ -1,4 +1,12 @@
 <details>
+<summary> 3.14.1 - 2026-06-05 </summary>
+
+- Fixed info display for TZP Buffer showing incorrect stats on the first level.
+- Fixed info display for Bullet Resistance for missing a percentage sign.
+
+</details>
+
+<details>
 <summary> 3.14.0 - 2026-05-24 </summary>
 
 - Added ``OverSpending`` attribute in the UpgradeAPI related code where it allows credit purchases to go negative
