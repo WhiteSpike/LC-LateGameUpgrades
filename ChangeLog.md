@@ -5,7 +5,7 @@
 - Added configuration setting to disable Locksmith minigame trigger when colliding with locked doors, giving the only option of interacting with them to start it.
 - Fixed info display for TZP Buffer showing incorrect stats on the first level.
 - Fixed info display for Bullet Resistance for missing a percentage sign.
-
+- Fixed Back Muscles upgrade descriptions for alternative modes as it was showing an incorrect value.
 
 </details>
 
