@@ -6,6 +6,7 @@
 - Fixed info display for TZP Buffer showing incorrect stats on the first level.
 - Fixed info display for Bullet Resistance for missing a percentage sign.
 - Fixed Back Muscles upgrade descriptions for alternative modes as it was showing an incorrect value.
+- Fixed issue with Explosion Resistance causing crashes due to infinite loop between kill player and damage player callbacks.
 
 </details>
 
