@@ -3,6 +3,7 @@
 
 - Fixed Rubber Boots not working as expected due to miscalculation of the hindrance multiplier.
 - Fixed Carbon Kneejoins not working as expected due to unexpected negative values, causing it to be slower rather than faster.
+- Possibly fixed Explosion Resistance causing crashes due to stack overflow exceptions.
 - Implemented configuration to destroy the medkit item when it runs out of charges.
     - Default setting is ``false`` to maintain the behaviour from prior versions.
 
