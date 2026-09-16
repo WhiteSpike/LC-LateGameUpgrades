@@ -124,6 +124,7 @@ namespace MoreShipUpgrades.Configuration
         [field: SyncedEntryField] public SyncedEntry<int> MEDKIT_PRICE { get; set; }
         [field: SyncedEntryField] public SyncedEntry<int> MEDKIT_HEAL_VALUE { get; set; }
         [field: SyncedEntryField] public SyncedEntry<int> MEDKIT_USES { get; set; }
+        [field: SyncedEntryField] public SyncedEntry<bool> DESTROY_USED_MEDKITS { get; set; }
         [field: SyncedEntryField] public SyncedEntry<bool> KEEP_UPGRADES_AFTER_FIRED_CUTSCENE { get; set; }
         [field: SyncedEntryField] public SyncedEntry<int> SNARE_FLEA_SAMPLE_MINIMUM_VALUE { get; set; }
         [field: SyncedEntryField] public SyncedEntry<int> SNARE_FLEA_SAMPLE_MAXIMUM_VALUE { get; set; }
@@ -247,6 +248,7 @@ namespace MoreShipUpgrades.Configuration
             MEDKIT_HEAL_VALUE = cfg.BindSyncedEntry(topSection, LguConstants.MEDKIT_HEAL_AMOUNT_KEY, LguConstants.MEDKIT_HEAL_AMOUNT_DEFAULT, LguConstants.MEDKIT_HEAL_AMOUNT_DESCRIPTION);
             MEDKIT_USES = cfg.BindSyncedEntry(topSection, LguConstants.MEDKIT_USES_KEY, LguConstants.MEDKIT_USES_DEFAULT, LguConstants.MEDKIT_USES_DESCRIPTION);
             MEDKIT_SCAN_NODE = cfg.BindSyncedEntry(topSection, LguConstants.MEDKIT_SCAN_NODE_KEY, LguConstants.ITEM_SCAN_NODE_DEFAULT, LguConstants.ITEM_SCAN_NODE_DESCRIPTION);
+            DESTROY_USED_MEDKITS = cfg.BindSyncedEntry(topSection, LguConstants.DESTROY_USED_MEDKITS_KEY, LguConstants.DESTROY_USED_MEDKITS_DEFAULT, LguConstants.DESTROY_USED_MEDKITS_DESCRIPTION);
 
             #endregion
 
