@@ -1,5 +1,13 @@
 <details>
-<summary> 3.14.1 - 2026-06-05 </summary>
+<summary> 3.14.2 - 2026-??-?? </summary>
+
+- Fixed Rubber Boots not working as expected due to miscalculation of the hindrance multiplier.
+- Fixed Carbon Kneejoins not working as expected due to unexpected negative values, causing it to be slower rather than faster.
+
+</details>
+
+<details>
+<summary> 3.14.1 - 2026-08-10 </summary>
 
 - Added terminal command ``load lgu all <playername>``, where the host uses this command to force all clients (including themselves) to load the same save file as the player specified in the command.
     - This is a version of ``load lgu <playername>`` where only one person has to type the command instead of all players take turns to type the command.
