@@ -112,6 +112,7 @@ namespace MoreShipUpgrades.Configuration
         [field: SyncedEntryField] public SyncedEntry<int> INTERNS_USAGES_PER_LANDING { get; set; }
         [field: SyncedEntryField] public SyncedEntry<float> INTERNS_INTERVAL_BETWEEN_REVIVES {  get; set; }
         [field: SyncedEntryField] public SyncedEntry<Interns.TeleportRestriction> INTERNS_TELEPORT_RESTRICTION { get; set; }
+        [field: SyncedEntryField] public SyncedEntry<float> INTERNS_TELEPORT_TIMER { get; set; }
         [field: SyncedEntryField] public SyncedEntry<bool> SHOW_WORLD_BUILDING_TEXT { get; set; }
         [field: SyncedEntryField] public SyncedEntry<bool> MEDKIT_SCAN_NODE { get; set; }
         [field: SyncedEntryField] public SyncedEntry<bool> OVERRIDE_UPGRADE_NAMES { get; set; }
@@ -801,6 +802,7 @@ namespace MoreShipUpgrades.Configuration
             INTERNS_USAGES_PER_LANDING = cfg.BindSyncedEntry(topSection, "Revives per Landing", -1, "Amount of times you can use the command per landing. Once the amount is reached, you can no longer revive more teammates. Use \"-1\" for infinite");
             INTERNS_INTERVAL_BETWEEN_REVIVES = cfg.BindSyncedEntry(topSection, "Interval between Revives", 0f, "Time interval between each revival");
             INTERNS_DELAY_BEFORE_REVIVE = cfg.BindSyncedEntry(topSection, "Delay before Revive", 0f, "Time after purchasing it to perform the revive");
+            INTERNS_TELEPORT_TIMER = cfg.BindSyncedEntry(topSection, "Teleport Timer", 60f, "Time (in seconds) after purchasing it to teleport the player to the ship");
 
             #endregion
 

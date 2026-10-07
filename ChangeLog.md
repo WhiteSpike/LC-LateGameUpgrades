@@ -6,6 +6,8 @@
 - Possibly fixed Explosion Resistance causing crashes due to stack overflow exceptions.
 - Implemented configuration to destroy the medkit item when it runs out of charges.
     - Default setting is ``false`` to maintain the behaviour from prior versions.
+- Implemented configuration for Interns for time allowed to teleport the player back to the ship after being revived through Interns.
+  - This is for cases where the player can be revived inside a section of the facility which is closed off to the outside.
 
 </details>
 
