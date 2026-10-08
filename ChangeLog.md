@@ -9,6 +9,8 @@
     - Default setting is ``false`` to maintain the behaviour from prior versions.
 - Implemented configuration for Interns for time allowed to teleport the player back to the ship after being revived through Interns.
   - This is for cases where the player can be revived inside a section of the facility which is closed off to the outside.
+- Added more world-building text to some upgrades. (Thank you Draglorr (discordID:draglorr))
+    - Due to already existing text on some upgrades from previous contributions, the lore will be randomized between texts on game session.
 
 </details>
 
