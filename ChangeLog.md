@@ -1,8 +1,18 @@
 <details>
+<summary> 3.14.3 - 2026-??-?? </summary>
+
+- Implemented Stronger Beacon one-time purchase upgrade which focuses on providing radar signal in the terminal from players who are located in caves.
+    - Implementation focuses on the checks performed by ``ManualMapRenderer`` on wether the player is in a cave node or not so this upgrade might also work with interior nodes who set up their own "cave nodes".
+        - However, vanilla only allows this check to run if it's in mineshaft interior. Another mod that removes this restriction would allow the use of cave nodes as expected.
+    - Configuration is the same as other one-time purchase upgrades.
+
+</details>
+
+<details>
 <summary> 3.14.2 - 2026-10-11 </summary>
 
 - Fixed Rubber Boots not working as expected due to miscalculation of the hindrance multiplier.
-- Fixed Carbon Kneejoins not working as expected due to unexpected negative values, causing it to be slower rather than faster.
+- Fixed Carbon Kneejoints not working as expected due to unexpected negative values, causing it to be slower rather than faster.
 - Fixed minimum and maximum sale percentage configuration being ignored due to error in sales generation logic.
 - Possibly fixed Explosion Resistance causing crashes due to stack overflow exceptions.
 - Implemented configuration to destroy the medkit item when it runs out of charges.
