@@ -5,6 +5,7 @@
     - Implementation focuses on the checks performed by ``ManualMapRenderer`` on wether the player is in a cave node or not so this upgrade might also work with interior nodes who set up their own "cave nodes".
         - However, vanilla only allows this check to run if it's in mineshaft interior. Another mod that removes this restriction would allow the use of cave nodes as expected.
     - Configuration is the same as other one-time purchase upgrades.
+- Fixed compatibility patching issue with [Oxygen](https://thunderstore.io/c/lethal-company/p/consequential/Oxygen/)
 
 </details>
 
