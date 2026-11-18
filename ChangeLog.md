@@ -1,4 +1,11 @@
 <details>
+<summary> 3.14.4 - 2026-??-?? </summary>
+
+- Fixed the sale generation for Better Scanner always being 100%.
+
+</details>
+
+<details>
 <summary> 3.14.3 - 2026-11-15 </summary>
 
 - Implemented Stronger Beacon one-time purchase upgrade which focuses on providing radar signal in the terminal from players who are located in caves.

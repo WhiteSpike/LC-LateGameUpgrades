@@ -157,7 +157,9 @@ namespace MoreShipUpgrades.UpgradeComponents.TierUpgrades.Player
                                                 alternateCurrency: CurrencyManager.Enabled,
                                                 purchaseMode: purchaseMode,
 												refundable,
-												refundPercentage
+												refundPercentage,
+                                                minimumSalePercentage: configuration.MinimumSalePercentage / 100f,
+                                                maximumSalePercentage: configuration.MaximumSalePercentage / 100f
 												);
         }
     }
