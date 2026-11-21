@@ -3,6 +3,8 @@
 
 - Changed the sales generation where each client generates their own set of sales and it's saved by the host.
     - When they reconnect, they use their own generated sales instead of the host's.
+- Changed the audio source used for samples from Hunter upgrade's rolloff mode from logarithmic to linear, making it easier to hear the samples.
+    - This change won't affect the samples introduced through the API, only the samples that LGU provides.
 - Fixed the sale generation for Better Scanner always being 100%.
 
 </details>

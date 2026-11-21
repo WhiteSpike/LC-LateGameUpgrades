@@ -109,6 +109,8 @@ namespace MoreShipUpgrades.UpgradeComponents.Items
                 Item sample = AssetBundleHandler.GetItemObject(creatureName);
                 sample.minValue = MINIMUM_VALUES[creatureName];
                 sample.maxValue = MAXIMUM_VALUES[creatureName];
+                AudioSource source = sample.spawnPrefab.GetComponent<AudioSource>();
+                if (source != null) source.rolloffMode = AudioRolloffMode.Linear;
                 API.HunterSamples.RegisterSampleItem(sample, creatureName, registerNetworkPrefab: true, grabbableToEnemies: true);
             }
         }
