@@ -571,11 +571,8 @@ namespace MoreShipUpgrades.Managers
                 {
                     node.SalePercentage = 1f;
                 }
-                if (IsHost || IsServer)
-                {
-                    logger.LogInfo("Saving node into save");
-                    UpgradeBus.Instance.SaleData.Add(node.Name, node.SalePercentage);
-                }
+                logger.LogInfo("Saving node into save");
+                UpgradeBus.Instance.SaleData.Add(node.Name, node.SalePercentage);
             }
             SaveInfo = new SaveInfo();
             UpdateLGUSaveServerRpc(playerID, Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(SaveInfo)), true);

@@ -1,6 +1,8 @@
 <details>
 <summary> 3.14.4 - 2026-??-?? </summary>
 
+- Changed the sales generation where each client generates their own set of sales and it's saved by the host.
+    - When they reconnect, they use their own generated sales instead of the host's.
 - Fixed the sale generation for Better Scanner always being 100%.
 
 </details>
